@@ -21,4 +21,8 @@
     <ProjectReference Include="..\UserCenter.Core\UserCenter.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="DTOs\" />
+  </ItemGroup>
+
 </Project>

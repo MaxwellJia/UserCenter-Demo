@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserCenter.API", "UserCente
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserCenter.Core", "UserCenter.Core\UserCenter.Core.csproj", "{7F772479-35FF-49BC-A0C9-40693ECFC23C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserCenter.Infrastructure", "UserCenter.Infrastructure\UserCenter.Infrastructure.csproj", "{F3B36A83-AD08-4377-A7D7-3005CDF397E4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{7F772479-35FF-49BC-A0C9-40693ECFC23C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7F772479-35FF-49BC-A0C9-40693ECFC23C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7F772479-35FF-49BC-A0C9-40693ECFC23C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F3B36A83-AD08-4377-A7D7-3005CDF397E4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F3B36A83-AD08-4377-A7D7-3005CDF397E4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F3B36A83-AD08-4377-A7D7-3005CDF397E4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F3B36A83-AD08-4377-A7D7-3005CDF397E4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
