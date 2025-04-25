@@ -1,9 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.13.35931.197 d17.13
+VisualStudioVersion = 17.13.35931.197
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserCenter.API", "UserCenter\UserCenter.API.csproj", "{95D478EC-BD39-4B0C-BA8B-66A796C1DEA4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserCenter.Core", "UserCenter.Core\UserCenter.Core.csproj", "{7F772479-35FF-49BC-A0C9-40693ECFC23C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{95D478EC-BD39-4B0C-BA8B-66A796C1DEA4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{95D478EC-BD39-4B0C-BA8B-66A796C1DEA4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{95D478EC-BD39-4B0C-BA8B-66A796C1DEA4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7F772479-35FF-49BC-A0C9-40693ECFC23C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7F772479-35FF-49BC-A0C9-40693ECFC23C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7F772479-35FF-49BC-A0C9-40693ECFC23C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7F772479-35FF-49BC-A0C9-40693ECFC23C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
