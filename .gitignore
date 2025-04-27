@@ -362,3 +362,4 @@ MigrationBackup/
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
 /UserCenter.API/appsettings.Development.json
+/UserCenter.Infrastructure/Services/UserServiceTest.cs
