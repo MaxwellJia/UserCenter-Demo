@@ -37,7 +37,11 @@ namespace UserCenter.API
 
             // 必须添加这一行！注册 Controller 服务
             builder.Services.AddControllers();
-            
+
+            // 加上这两行，启用 Swagger
+            builder.Services.AddEndpointsApiExplorer();
+            builder.Services.AddSwaggerGen();
+
             // 注册认证 + 授权服务
             builder.Services.AddAuthentication();
             builder.Services.AddAuthorization();
@@ -46,6 +50,13 @@ namespace UserCenter.API
             builder.Services.AddScoped<IAuthService, AuthService>();
 
             var app = builder.Build();
+
+            // 开发环境启用 Swagger
+            if (app.Environment.IsDevelopment())
+            {
+                app.UseSwagger();
+                app.UseSwaggerUI();
+            }
 
             // Configure the HTTP request pipeline...
             app.UseAuthentication();
