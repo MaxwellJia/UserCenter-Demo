@@ -3,16 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using UserCenter.Core.Models;
+using UserCenter.Core.Entities;
 
 namespace UserCenter.Core.Interfaces
 {
     public interface IUserService
     {
-        Task<IEnumerator<User>> GetAllUsersAsync();
-        Task<User?> GetUserByIdAsync(int id);
-        Task<User> CreateUserAsync(User user);
-        Task<User> UpdateUserAsync(User user);
+        Task<IEnumerator<ApplicationUser>> GetAllUsersAsync();
+        Task<ApplicationUser?> GetUserByIdAsync(int id);
+        Task<ApplicationUser> CreateUserAsync(ApplicationUser applicationUser);
+        Task<ApplicationUser> UpdateUserAsync(ApplicationUser applicationUser);
         Task<bool> DeleteUserAsync(int id);
     }
 }

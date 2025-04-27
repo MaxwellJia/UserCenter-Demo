@@ -8,9 +8,9 @@ namespace UserCenter.Core.Entities;
 
 public class ApplicationUser : IdentityUser<Guid>
 {
-    public string NickName { get; set; }
+    public string? NickName { get; set; }
 
-    public string AvatarUrl { get; set; }
+    public string? AvatarUrl { get; set; }
 
     public short? Gender { get; set; }
 

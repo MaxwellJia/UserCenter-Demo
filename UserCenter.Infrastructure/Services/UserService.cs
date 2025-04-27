@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace UserCenter.Infrastructure.Services
 {
-    internal class UserService
+    public class UserService
     {
     }
 }

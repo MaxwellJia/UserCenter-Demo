@@ -19,6 +19,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\UserCenter.Core\UserCenter.Core.csproj" />
+    <ProjectReference Include="..\UserCenter.Infrastructure\UserCenter.Infrastructure.csproj" />
   </ItemGroup>
 
   <ItemGroup>
