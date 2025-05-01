@@ -363,4 +363,3 @@ MigrationBackup/
 FodyWeavers.xsd
 /UserCenter.API/appsettings.Development.json
 /UserCenter.Infrastructure/Services/UserServiceTest.cs
-/UserCenter.Tests/UserServiceTest.cs
