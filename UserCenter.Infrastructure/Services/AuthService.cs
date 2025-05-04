@@ -14,6 +14,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.Extensions.Options;
 using System.Security.Claims;
 using Microsoft.Extensions.Logging;
+using UserCenter.API.DTOs.Auth;
 
 namespace UserCenter.Infrastructure.Services
 {
@@ -40,7 +41,7 @@ namespace UserCenter.Infrastructure.Services
         /// </summary>
         /// <param name="registerUserDto"></param>
         /// <returns>User if succeeded</returns>
-        public async Task<ApplicationUser?> RegisterAsync(RegisterUserDto registerUserDto)
+        public async Task<RegisterRespondDto> RegisterAsync(RegisterUserDto registerUserDto)
         {
             var user = new ApplicationUser
             {
@@ -48,12 +49,26 @@ namespace UserCenter.Infrastructure.Services
                 CreateTime = DateTime.UtcNow,
                 UpdateTime = DateTime.UtcNow,
                 IsDelete = 0,
-                UserStatus = 1
+                UserStatus = 1,
+                UserRole = 0,
             };
 
             var result = await _userManager.CreateAsync(user, registerUserDto.Password);
 
-            return result.Succeeded ? user : null;
+            var response = new RegisterRespondDto
+            {
+                IsSuccess = false,
+            };
+
+            if (result.Succeeded)
+            {
+                response.IsSuccess = true;
+                response.Token = GenerateJwtToken(user);
+            }
+            else {
+                response.ErrorMessage = string.Join(", ", result.Errors.Select(e => e.Description));
+            }
+            return response;
         }
 
         /// <summary>

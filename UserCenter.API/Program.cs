@@ -1,6 +1,7 @@
 
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using UserCenter.Core.Configuration;
 using UserCenter.Core.Entities;
 using UserCenter.Core.Interfaces;
 using UserCenter.Infrastructure.Data;
@@ -22,6 +23,21 @@ namespace UserCenter.API
             // ×¢²á DbContext
             builder.Services.AddDbContext<UserCenterDbContext>(options =>
                 options.UseNpgsql(connectionString));
+
+            // ×¢²á JWT ÈÏÖ¤
+            builder.Services.Configure<JwtSettings>(
+                builder.Configuration.GetSection("JwtSettings"));
+
+            // ×¢²á CORS ²ßÂÔ
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowFrontend", policy =>
+                {
+                    policy.WithOrigins("http://localhost:3000") // ÄãµÄÇ°¶ËµØÖ·
+                          .AllowAnyHeader()
+                          .AllowAnyMethod();
+                });
+            });
 
             // ×¢²á Identity
             builder.Services.AddIdentity<ApplicationUser, IdentityRole<Guid>>(options =>
@@ -57,6 +73,9 @@ namespace UserCenter.API
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
+
+            // Allow all frontend access
+            app.UseCors("AllowFrontend");
 
             // Configure the HTTP request pipeline...
             app.UseAuthentication();
