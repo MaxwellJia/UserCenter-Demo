@@ -19,8 +19,16 @@ namespace UserCenter.API.Controllers
         public async Task<IActionResult> Register([FromBody] RegisterUserDto registerUserDto)
         {
             var result = await _authService.RegisterAsync(registerUserDto);
-            if (!result.IsSuccess) return BadRequest(result.ErrorMessage);
-            return Ok(result.Token);
+            if (!result.IsSuccess) return BadRequest(result);
+            return Ok(result);
+        }
+
+        [HttpPost("login")]
+        public async Task<IActionResult> Login([FromBody] LoginUserDto loginUserDto)
+        {
+            var result = await _authService.LoginAsync(loginUserDto);
+            if (!result.IsSuccess) return BadRequest(result);
+            return Ok(result);
         }
     }
 }

@@ -1,9 +1,8 @@
-﻿namespace UserCenter.API.DTOs.Auth
+﻿using UserCenter.Core.DTOs;
+
+namespace UserCenter.API.DTOs.Auth
 {
-    public class RegisterRespondDto
+    public class RegisterRespondDto : ApiResponse<string>
     {
-        public bool IsSuccess { get; set; }
-        public string? Token { get; set; }
-        public string? ErrorMessage { get; set; }
     }
 }

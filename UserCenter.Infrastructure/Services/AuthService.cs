@@ -63,10 +63,10 @@ namespace UserCenter.Infrastructure.Services
             if (result.Succeeded)
             {
                 response.IsSuccess = true;
-                response.Token = GenerateJwtToken(user);
+                response.Data = GenerateJwtToken(user);
             }
             else {
-                response.ErrorMessage = string.Join(", ", result.Errors.Select(e => e.Description));
+                response.Message = string.Join(", ", result.Errors.Select(e => e.Description));
             }
             return response;
         }
@@ -76,16 +76,32 @@ namespace UserCenter.Infrastructure.Services
         /// </summary>
         /// <param name="loginUserDto"></param>
         /// <returns>JWT token if succeeded</returns>
-        public async Task<string?> LoginAsync(LoginUserDto loginUserDto)
+        public async Task<LoginRespondDto> LoginAsync(LoginUserDto loginUserDto)
         {
+            var response = new LoginRespondDto
+            {
+                IsSuccess = false,
+            };
+
             var user = await _userManager.FindByNameAsync(loginUserDto.Username);
 
             if (user == null)
-                return null;
+            {
+                response.Message = "User not found";
+                return response;
+            }
 
             var result = await _signInManager.CheckPasswordSignInAsync(user, loginUserDto.Password, false);
 
-            return result.Succeeded ? GenerateJwtToken(user) : null;
+            if (!result.Succeeded)
+            {
+                response.Message = "Invalid password";
+                return response;
+            }
+
+            response.IsSuccess = true;
+            response.Data = GenerateJwtToken(user);
+            return response;
         }
 
         /// <summary>
