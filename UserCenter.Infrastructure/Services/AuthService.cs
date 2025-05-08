@@ -43,6 +43,19 @@ namespace UserCenter.Infrastructure.Services
         /// <returns>User if succeeded</returns>
         public async Task<RegisterRespondDto> RegisterAsync(RegisterUserDto registerUserDto)
         {
+            var response = new RegisterRespondDto
+            {
+                IsSuccess = false,
+            };
+
+            // Custom Validation
+            var validationMessage = ValidateRegisterLoginInput(registerUserDto, true);
+            if (!string.IsNullOrEmpty(validationMessage))
+            {
+                response.Message = validationMessage;
+                return response;
+            }
+
             var user = new ApplicationUser
             {
                 UserName = registerUserDto.Username,
@@ -54,11 +67,6 @@ namespace UserCenter.Infrastructure.Services
             };
 
             var result = await _userManager.CreateAsync(user, registerUserDto.Password);
-
-            var response = new RegisterRespondDto
-            {
-                IsSuccess = false,
-            };
 
             if (result.Succeeded)
             {
@@ -72,6 +80,45 @@ namespace UserCenter.Infrastructure.Services
         }
 
         /// <summary>
+        /// Custom validation for register and login input
+        /// 
+        ///Username verification:
+        ///Length: 3-32 characters.
+        ///Limited to: letters, numbers, and underscores(a-zA-Z0-9_).
+        ///
+        ///Password verification:
+        ///Length: at least 8 characters.
+        ///Contains:
+        ///One uppercase letter(A-Z).
+        ///One lowercase letter(a-z).
+        ///One number(0-9).
+        ///One special character(widely supported special characters: !@#$%^&*()_+-=[]{}|;:'",.<>/?~`).
+        /// </summary>
+        /// <param name="dto"></param>
+        /// <returns></returns>
+        private string ValidateRegisterLoginInput(dynamic dto, bool isRegister = false)
+        {
+            // Username validation using regex
+            if (string.IsNullOrWhiteSpace(dto.Username)) return "Username is required.";
+            if (!System.Text.RegularExpressions.Regex.IsMatch(dto.Username, "^(?=.{3,32}$)[a-zA-Z0-9_]+$"))
+                return "Username must be 3-32 characters and can only contain letters, numbers, and underscores.";
+
+            // Password validation using regex
+            if (string.IsNullOrWhiteSpace(dto.Password)) return "Password is required.";
+            if (!System.Text.RegularExpressions.Regex.IsMatch(dto.Password, @"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{}|;:'"",.<>/?`~]).{8,}$"))
+                return "Password must include uppercase, lowercase, number, and special character, and be at least 8 characters long.";
+
+            // Email validation
+            if (isRegister) {
+                if (string.IsNullOrWhiteSpace(dto.Email)) return "Email is required.";
+                if (!System.Text.RegularExpressions.Regex.IsMatch(dto.Email, "^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$"))
+                    return "Please enter a valid email address.";
+            }
+            
+            return string.Empty; // Valid input
+        }
+
+        /// <summary>
         /// Login a user and return JWT token
         /// </summary>
         /// <param name="loginUserDto"></param>
@@ -82,6 +129,14 @@ namespace UserCenter.Infrastructure.Services
             {
                 IsSuccess = false,
             };
+
+            // Custom Validation
+            var validationMessage = ValidateRegisterLoginInput(loginUserDto);
+            if (!string.IsNullOrEmpty(validationMessage))
+            {
+                response.Message = validationMessage;
+                return response;
+            }
 
             var user = await _userManager.FindByNameAsync(loginUserDto.Username);
 
