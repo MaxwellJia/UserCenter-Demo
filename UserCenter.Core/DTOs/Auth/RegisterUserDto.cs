@@ -10,14 +10,20 @@ namespace UserCenter.Core.DTOs.Auth
     public class RegisterUserDto
     {
         [Required]
-        [StringLength(50, MinimumLength = 6)]
-        public required string Username { get; set; }
+        [MinLength(6)]
+        [MaxLength(32)]
+        [RegularExpression("^[a-zA-Z0-9_]+$")]
+        public string Username { get; set; }
 
         [Required]
-        [StringLength(50, MinimumLength = 6)]
-        public required string Password { get; set; }
+        [MinLength(8)]
+        [MaxLength(64)]
+        [RegularExpression("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[^a-zA-Z\\d]).{8,64}$")]
+        public string Password { get; set; }
 
-        public required string Email { get; set; }
+        [Required]
+        [RegularExpression("^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$")]
+        public string Email { get; set; }
         //public string? NickName { get; set; }
 
         //public string? AvatarUrl { get; set; }

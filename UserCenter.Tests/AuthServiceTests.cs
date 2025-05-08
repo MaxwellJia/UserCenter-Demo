@@ -1,67 +1,147 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore;
+﻿using Xunit;
 using Moq;
-using UserCenter.Core.Entities;
-using UserCenter.Infrastructure.Data;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using UserCenter.Infrastructure.Services;
-using Xunit;
+using UserCenter.Core.Entities;
+using UserCenter.Core.DTOs.Auth;
+using UserCenter.Core.Configuration;
 
-namespace UserCenter.Tests
+public class AuthServiceTests
 {
-    public class AuthServiceTests
+    private readonly Mock<UserManager<ApplicationUser>> _userManagerMock;
+    private readonly Mock<SignInManager<ApplicationUser>> _signInManagerMock;
+    private readonly Mock<IOptions<JwtSettings>> _jwtSettingsMock;
+    private readonly Mock<ILogger<AuthService>> _loggerMock;
+
+    private readonly AuthService _authService;
+
+    public AuthServiceTests()
     {
-        private AuthService CreateAuthService(out UserCenterDbContext context)
+        var store = new Mock<IUserStore<ApplicationUser>>();
+        _userManagerMock = new Mock<UserManager<ApplicationUser>>(
+            store.Object, null, null, null, null, null, null, null, null
+        );
+
+        var contextAccessor = new Mock<Microsoft.AspNetCore.Http.IHttpContextAccessor>();
+        var claimsFactory = new Mock<IUserClaimsPrincipalFactory<ApplicationUser>>();
+        _signInManagerMock = new Mock<SignInManager<ApplicationUser>>(
+            _userManagerMock.Object, contextAccessor.Object, claimsFactory.Object, null, null, null, null
+        );
+
+        _jwtSettingsMock = new Mock<IOptions<JwtSettings>>();
+        _jwtSettingsMock.Setup(j => j.Value).Returns(new JwtSettings
         {
-            // 用 InMemory 数据库
-            var options = new DbContextOptionsBuilder<UserCenterDbContext>()
-                .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString()) // 每次测试独立数据库
-                .Options;
+            SecretKey = "12345678901234567890123456789012", // 32-char for HMAC
+            Issuer = "testissuer",
+            Audience = "testaudience",
+            ExpirationMinutes = 30
+        });
 
-            context = new UserCenterDbContext(options);
+        _loggerMock = new Mock<ILogger<AuthService>>();
 
-            // 配置 Identity 需要的 UserStore
-            var userStore = new UserStore<ApplicationUser, IdentityRole<Guid>, UserCenterDbContext, Guid>(context);
-            var userManager = new UserManager<ApplicationUser>(
-                userStore,
-                null, // IOptions<IdentityOptions>
-                new PasswordHasher<ApplicationUser>(),
-                new IUserValidator<ApplicationUser>[0],
-                new IPasswordValidator<ApplicationUser>[0],
-                null, // ILookupNormalizer
-                null, // IdentityErrorDescriber
-                null, // IServiceProvider
-                null  // ILogger<UserManager<ApplicationUser>>
-            );
+        _authService = new AuthService(
+            _userManagerMock.Object,
+            _signInManagerMock.Object,
+            _jwtSettingsMock.Object,
+            _loggerMock.Object
+        );
+    }
 
-            var signInManager = new SignInManager<ApplicationUser>(
-                userManager,
-                new Mock<Microsoft.AspNetCore.Http.IHttpContextAccessor>().Object,
-                new Mock<IUserClaimsPrincipalFactory<ApplicationUser>>().Object,
-                null, null, null, null
-            );
-
-            return new AuthService(userManager, signInManager);
-        }
-
-        [Fact]
-        public async Task RegisterAsync_ShouldCreateUser_AndPersistToDatabase()
+    [Fact]
+    public async Task RegisterAsync_ShouldReturnSuccess_WhenUserIsValid()
+    {
+        // Arrange
+        var dto = new RegisterUserDto
         {
-            // Arrange
-            var authService = CreateAuthService(out var context);
-            var username = "testuser";
-            var password = "Password123!";
+            Username = "TestUser",
+            Password = "Valid@123",
+            Email = "test@example.com"
+        };
 
-            // Act
-            var result = await authService.RegisterAsync(username, password);
+        _userManagerMock.Setup(u => u.CreateAsync(It.IsAny<ApplicationUser>(), It.IsAny<string>()))
+            .ReturnsAsync(IdentityResult.Success);
 
-            // Assert
-            Assert.NotNull(result);  // 确认 RegisterAsync 返回了一个用户
+        // Act
+        var result = await _authService.RegisterAsync(dto);
 
-            var userInDb = await context.Users.FirstOrDefaultAsync(u => u.UserName == username);
-            Assert.NotNull(userInDb);  // 确认数据库真的存了用户
-            Assert.Equal(username, userInDb.UserName);  // 确认用户名正确
-            Assert.NotNull(userInDb.PasswordHash);      // 确认密码已经加密保存
-        }
+        // Assert
+        Assert.True(result.IsSuccess);
+        Assert.NotNull(result.Data);
+    }
+
+    [Fact]
+    public async Task RegisterAsync_ShouldFail_WhenPasswordInvalid()
+    {
+        var dto = new RegisterUserDto
+        {
+            Username = "TestUser",
+            Password = "weak", // invalid format
+            Email = "test@example.com"
+        };
+
+        var result = await _authService.RegisterAsync(dto);
+
+        Assert.False(result.IsSuccess);
+        Assert.Contains("Password", result.Message);
+    }
+
+    [Fact]
+    public async Task LoginAsync_ShouldReturnSuccess_WhenCredentialsAreCorrect()
+    {
+        var user = new ApplicationUser { UserName = "TestUser" };
+        var dto = new LoginUserDto
+        {
+            Username = "TestUser",
+            Password = "Valid@123"
+        };
+
+        _userManagerMock.Setup(u => u.FindByNameAsync(dto.Username)).ReturnsAsync(user);
+        _signInManagerMock.Setup(s => s.CheckPasswordSignInAsync(user, dto.Password, false))
+            .ReturnsAsync(SignInResult.Success);
+
+        var result = await _authService.LoginAsync(dto);
+
+        Assert.True(result.IsSuccess);
+        Assert.NotNull(result.Data);
+    }
+
+    [Fact]
+    public async Task LoginAsync_ShouldFail_WhenPasswordIsWrong()
+    {
+        var user = new ApplicationUser { UserName = "TestUser" };
+        var dto = new LoginUserDto
+        {
+            Username = "TestUser",
+            Password = "Wrong@123"
+        };
+
+        _userManagerMock.Setup(u => u.FindByNameAsync(dto.Username)).ReturnsAsync(user);
+        _signInManagerMock.Setup(s => s.CheckPasswordSignInAsync(user, dto.Password, false))
+            .ReturnsAsync(SignInResult.Failed);
+
+        var result = await _authService.LoginAsync(dto);
+
+        Assert.False(result.IsSuccess);
+        Assert.Equal("Invalid password", result.Message);
+    }
+
+    [Fact]
+    public async Task LoginAsync_ShouldFail_WhenUserNotFound()
+    {
+        var dto = new LoginUserDto
+        {
+            Username = "NotExist",
+            Password = "Anything123!"
+        };
+
+        _userManagerMock.Setup(u => u.FindByNameAsync(dto.Username)).ReturnsAsync((ApplicationUser?)null);
+
+        var result = await _authService.LoginAsync(dto);
+
+        Assert.False(result.IsSuccess);
+        Assert.Equal("User not found", result.Message);
     }
 }
