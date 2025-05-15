@@ -15,6 +15,7 @@ using Microsoft.Extensions.Options;
 using System.Security.Claims;
 using Microsoft.Extensions.Logging;
 using UserCenter.API.DTOs.Auth;
+using UserCenter.Infrastructure.Constants;
 
 namespace UserCenter.Infrastructure.Services
 {
@@ -121,9 +122,9 @@ namespace UserCenter.Infrastructure.Services
         /// <summary>
         /// Login a user and return JWT token
         /// </summary>
-        /// <param name="loginUserDto"></param>
+        /// <param name="loginRequestDto"></param>
         /// <returns>JWT token if succeeded</returns>
-        public async Task<LoginRespondDto> LoginAsync(LoginUserDto loginUserDto)
+        public async Task<LoginRespondDto> LoginAsync(LoginRequestDto loginRequestDto)
         {
             var response = new LoginRespondDto
             {
@@ -131,14 +132,14 @@ namespace UserCenter.Infrastructure.Services
             };
 
             // Custom Validation
-            var validationMessage = ValidateRegisterLoginInput(loginUserDto);
+            var validationMessage = ValidateRegisterLoginInput(loginRequestDto);
             if (!string.IsNullOrEmpty(validationMessage))
             {
                 response.Message = validationMessage;
                 return response;
             }
 
-            var user = await _userManager.FindByNameAsync(loginUserDto.Username);
+            var user = await _userManager.FindByNameAsync(loginRequestDto.Username);
 
             if (user == null)
             {
@@ -146,7 +147,7 @@ namespace UserCenter.Infrastructure.Services
                 return response;
             }
 
-            var result = await _signInManager.CheckPasswordSignInAsync(user, loginUserDto.Password, false);
+            var result = await _signInManager.CheckPasswordSignInAsync(user, loginRequestDto.Password, false);
 
             if (!result.Succeeded)
             {
@@ -155,7 +156,16 @@ namespace UserCenter.Infrastructure.Services
             }
 
             response.IsSuccess = true;
-            response.Data = GenerateJwtToken(user);
+            response.Data = new LoginUserDto
+            {
+                Token = GenerateJwtToken(user),
+                NickName = user.UserName ?? "",
+                Email = user.Email ?? "",
+                Avatar = user.AvatarUrl ?? Defaults.DefaultAvatar,
+                UserRole = user.UserRole ?? 0,
+                Phone = user.PhoneNumber ?? "",
+            };
+            
             return response;
         }
 

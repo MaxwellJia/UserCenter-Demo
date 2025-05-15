@@ -1,6 +1,6 @@
 ﻿namespace UserCenter.Core.DTOs.Auth
 {
-    public class LoginRespondDto : ApiResponse<string>
+    public class LoginRespondDto : ApiResponse<LoginUserDto>
     {
     }
 }

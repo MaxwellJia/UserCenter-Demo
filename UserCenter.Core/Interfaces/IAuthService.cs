@@ -12,6 +12,6 @@ namespace UserCenter.Core.Interfaces
     public interface IAuthService
     {
         Task<RegisterRespondDto> RegisterAsync(RegisterUserDto registerUserDto);
-        Task<LoginRespondDto> LoginAsync(LoginUserDto userDto);
+        Task<LoginRespondDto> LoginAsync(LoginRequestDto userDto);
     }
 }

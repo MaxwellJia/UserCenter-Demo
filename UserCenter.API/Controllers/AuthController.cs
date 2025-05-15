@@ -24,7 +24,7 @@ namespace UserCenter.API.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] LoginUserDto loginUserDto)
+        public async Task<IActionResult> Login([FromBody] LoginRequestDto loginUserDto)
         {
             var result = await _authService.LoginAsync(loginUserDto);
             if (!result.IsSuccess) return BadRequest(result);

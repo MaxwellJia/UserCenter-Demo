@@ -92,7 +92,7 @@ public class AuthServiceTests
     public async Task LoginAsync_ShouldReturnSuccess_WhenCredentialsAreCorrect()
     {
         var user = new ApplicationUser { UserName = "TestUser" };
-        var dto = new LoginUserDto
+        var dto = new LoginRequestDto
         {
             Username = "TestUser",
             Password = "Valid@123"
@@ -112,7 +112,7 @@ public class AuthServiceTests
     public async Task LoginAsync_ShouldFail_WhenPasswordIsWrong()
     {
         var user = new ApplicationUser { UserName = "TestUser" };
-        var dto = new LoginUserDto
+        var dto = new LoginRequestDto
         {
             Username = "TestUser",
             Password = "Wrong@123"
@@ -131,7 +131,7 @@ public class AuthServiceTests
     [Fact]
     public async Task LoginAsync_ShouldFail_WhenUserNotFound()
     {
-        var dto = new LoginUserDto
+        var dto = new LoginRequestDto
         {
             Username = "NotExist",
             Password = "Anything123!"
