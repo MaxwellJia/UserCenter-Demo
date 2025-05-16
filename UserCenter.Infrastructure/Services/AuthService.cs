@@ -120,10 +120,10 @@ namespace UserCenter.Infrastructure.Services
         }
 
         /// <summary>
-        /// Login a user and return JWT token
+        /// Login a user and return LoginRespondDto
         /// </summary>
         /// <param name="loginRequestDto"></param>
-        /// <returns>JWT token if succeeded</returns>
+        /// <returns>LoginRespondDto token if succeeded</returns>
         public async Task<LoginRespondDto> LoginAsync(LoginRequestDto loginRequestDto)
         {
             var response = new LoginRespondDto
@@ -158,12 +158,14 @@ namespace UserCenter.Infrastructure.Services
             response.IsSuccess = true;
             response.Data = new LoginUserDto
             {
+                UserId = user.Id.ToString(),
                 Token = GenerateJwtToken(user),
                 NickName = user.UserName ?? "",
                 Email = user.Email ?? "",
                 Avatar = user.AvatarUrl ?? Defaults.DefaultAvatar,
                 UserRole = user.UserRole ?? 0,
                 Phone = user.PhoneNumber ?? "",
+                Gender = user.Gender ?? 0,
             };
             
             return response;

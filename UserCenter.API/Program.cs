@@ -58,9 +58,10 @@ namespace UserCenter.API
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
-            // 注册认证 + 授权服务
+            // 注册认证 + 授权服务 + 用户相关服务
             builder.Services.AddAuthentication();
             builder.Services.AddAuthorization();
+            builder.Services.AddScoped<IUserService, UserService>();
 
             // 其他 Service 注册...
             builder.Services.AddScoped<IAuthService, AuthService>();

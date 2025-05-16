@@ -50,6 +50,21 @@
 	2.token整体流程
 	登录时生成token，token每一段时间过期 √
 	用户拿到token后存储在local stroage中 √
-	相关网页去访问local stroage去拿用户信息展示，用户可以通过相关的功能修改信息
+	相关网页去访问local stroage去拿用户信息展示，用户可以通过相关的功能修改信息 
 	访问自己信息时或者重要信息时去验证一下token
 	对用户修改的操作验证user role
+
+# 16/05/2025
+## 今日计划
+1. 相关网页去访问local stroage去拿用户信息展示，用户可以通过相关的功能修改信息
+   新写一个useeffect的context的tsx文件，将这个context文件套用在全局context，使其能够全局使用user变量
+   在想要调用的页面中初始化useAuthContext()，然后{user?.nickName}之类去调用用户信息
+   1. 修改前端信息 √
+   2. 头像需要改为上传相关照片，存后端还是哪 （常规逻辑为存到云端或者服务器，后端记录图片URLs，但我没云端）
+   3. 前端提交表格后端写接口(User Profile)√
+   4. gender改下拉框 √
+
+2. 访问自己信息时或者重要信息时去验证一下token
+3. 对用户修改的操作验证user role
+4. 解决登录态的问题
+5. 解决标签图标问题

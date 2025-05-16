@@ -10,10 +10,14 @@ namespace UserCenter.API.Controllers
     {
         private readonly IAuthService _authService;
 
-        public AuthController(IAuthService authService)
+        private readonly IUserService _userService;
+
+        public AuthController(IAuthService authService, IUserService userService)
         {
             _authService = authService;
+            _userService = userService;
         }
+
 
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterUserDto registerUserDto)
@@ -27,6 +31,14 @@ namespace UserCenter.API.Controllers
         public async Task<IActionResult> Login([FromBody] LoginRequestDto loginUserDto)
         {
             var result = await _authService.LoginAsync(loginUserDto);
+            if (!result.IsSuccess) return BadRequest(result);
+            return Ok(result);
+        }
+
+        [HttpPost("saveChanges")]
+        public async Task<IActionResult> SaveChanges([FromBody] SaveChangesRequestDto saveChangesRequestDto)
+        {
+            var result = await _userService.UpdateUserAsync(saveChangesRequestDto);
             if (!result.IsSuccess) return BadRequest(result);
             return Ok(result);
         }

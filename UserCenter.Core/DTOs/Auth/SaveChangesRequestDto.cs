@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace UserCenter.Core.DTOs.Auth
 {
-    public class LoginUserDto
+    public class SaveChangesRequestDto
     {
-        public required string UserId { get; set; }
+        public required string UserId { get; set; } = default!;
         public required string Avatar { get; set; } = default!;
         public required string NickName { get; set; } = default!;
         public required string Email { get; set; } = default!;
