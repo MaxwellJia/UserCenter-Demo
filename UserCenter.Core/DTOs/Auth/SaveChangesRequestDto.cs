@@ -12,7 +12,6 @@ namespace UserCenter.Core.DTOs.Auth
         public required string Avatar { get; set; } = default!;
         public required string NickName { get; set; } = default!;
         public required string Email { get; set; } = default!;
-        public required string Token { get; set; }
 
         public required int UserRole { get; set; }
         public required int Gender { get; set; }

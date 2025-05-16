@@ -30,17 +30,43 @@ namespace UserCenter.API.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginRequestDto loginUserDto)
         {
-            var result = await _authService.LoginAsync(loginUserDto);
-            if (!result.IsSuccess) return BadRequest(result);
-            return Ok(result);
+            var (result, tokenString) = await _authService.LoginAsync(loginUserDto);
+            if (result.IsSuccess && result.Data != null)
+            {
+                // 设置 HttpOnly Cookie
+                Response.Cookies.Append("token", tokenString, new CookieOptions
+                {
+                    HttpOnly = true,
+                    Secure = true, // 本地开发设为 false
+                    SameSite = SameSiteMode.Strict,
+                    Expires = DateTimeOffset.UtcNow.AddHours(1)
+                });
+
+                return Ok(result); // 可返回用户信息给前端使用
+            }
+
+            return BadRequest(result.Message ?? "Login failed");
         }
 
         [HttpPost("saveChanges")]
         public async Task<IActionResult> SaveChanges([FromBody] SaveChangesRequestDto saveChangesRequestDto)
         {
-            var result = await _userService.UpdateUserAsync(saveChangesRequestDto);
-            if (!result.IsSuccess) return BadRequest(result);
-            return Ok(result);
+            var (result,tokenString) = await _userService.UpdateUserAsync(saveChangesRequestDto);
+            if (result.IsSuccess && result.Data != null)
+            {
+                // 设置 HttpOnly Cookie
+                Response.Cookies.Append("token", tokenString, new CookieOptions
+                {
+                    HttpOnly = true,
+                    Secure = true, // 本地开发设为 false
+                    SameSite = SameSiteMode.Strict,
+                    Expires = DateTimeOffset.UtcNow.AddHours(1)
+                });
+
+                return Ok(result); // 可返回用户信息给前端使用
+            }
+
+            return BadRequest(result.Message ?? "Change failed");
         }
     }
 }

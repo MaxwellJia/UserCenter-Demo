@@ -35,7 +35,8 @@ namespace UserCenter.API
                 {
                     policy.WithOrigins("http://localhost:3000") // 你的前端地址
                           .AllowAnyHeader()
-                          .AllowAnyMethod();
+                          .AllowAnyMethod()
+                          .AllowCredentials(); // 允许 Cookie（HTTP ONLY 必须带上）
                 });
             });
 

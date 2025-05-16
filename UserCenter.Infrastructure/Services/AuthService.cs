@@ -124,7 +124,7 @@ namespace UserCenter.Infrastructure.Services
         /// </summary>
         /// <param name="loginRequestDto"></param>
         /// <returns>LoginRespondDto token if succeeded</returns>
-        public async Task<LoginRespondDto> LoginAsync(LoginRequestDto loginRequestDto)
+        public async Task<(LoginRespondDto, string?)> LoginAsync(LoginRequestDto loginRequestDto)
         {
             var response = new LoginRespondDto
             {
@@ -136,7 +136,7 @@ namespace UserCenter.Infrastructure.Services
             if (!string.IsNullOrEmpty(validationMessage))
             {
                 response.Message = validationMessage;
-                return response;
+                return (response, "");
             }
 
             var user = await _userManager.FindByNameAsync(loginRequestDto.Username);
@@ -144,7 +144,7 @@ namespace UserCenter.Infrastructure.Services
             if (user == null)
             {
                 response.Message = "User not found";
-                return response;
+                return (response, "");
             }
 
             var result = await _signInManager.CheckPasswordSignInAsync(user, loginRequestDto.Password, false);
@@ -152,14 +152,13 @@ namespace UserCenter.Infrastructure.Services
             if (!result.Succeeded)
             {
                 response.Message = "Invalid password";
-                return response;
+                return (response, "");
             }
 
             response.IsSuccess = true;
             response.Data = new LoginUserDto
             {
                 UserId = user.Id.ToString(),
-                Token = GenerateJwtToken(user),
                 NickName = user.UserName ?? "",
                 Email = user.Email ?? "",
                 Avatar = user.AvatarUrl ?? Defaults.DefaultAvatar,
@@ -167,8 +166,9 @@ namespace UserCenter.Infrastructure.Services
                 Phone = user.PhoneNumber ?? "",
                 Gender = user.Gender ?? 0,
             };
+            String Token = GenerateJwtToken(user);
             
-            return response;
+            return (response, Token);
         }
 
         /// <summary>

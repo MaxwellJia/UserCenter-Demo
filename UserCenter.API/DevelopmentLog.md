@@ -50,7 +50,7 @@
 	2.token整体流程
 	登录时生成token，token每一段时间过期 √
 	用户拿到token后存储在local stroage中 √
-	相关网页去访问local stroage去拿用户信息展示，用户可以通过相关的功能修改信息 
+	相关网页去访问local stroage去拿用户信息展示，用户可以通过相关的功能修改信息(user profile已完成) √
 	访问自己信息时或者重要信息时去验证一下token
 	对用户修改的操作验证user role
 
@@ -64,7 +64,10 @@
    3. 前端提交表格后端写接口(User Profile)√
    4. gender改下拉框 √
 
-2. 访问自己信息时或者重要信息时去验证一下token
+2. 访问自己信息时或者重要信息时去验证一下token，用Cookie HTTP only去带token，后端通过 Response.Cookies.Append
+   向前端发送cookie并带有token，验证时前端通过请求中设置withCredentials: true,带token给后端 √
+1. 后端通过JwtBearer读取token(后端验证并未完成)
+
 3. 对用户修改的操作验证user role
 4. 解决登录态的问题
 5. 解决标签图标问题

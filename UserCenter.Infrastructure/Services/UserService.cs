@@ -37,7 +37,7 @@ namespace UserCenter.Infrastructure.Services
         /// </summary>
         /// <param name="saveChangesRequestDto"></param>
         /// <returns>SaveChangesRespondDto if succeeded</returns>
-        public async Task<SaveChangesRespondDto> UpdateUserAsync(SaveChangesRequestDto saveChangesRequestDto)
+        public async Task<(SaveChangesRespondDto, string)> UpdateUserAsync(SaveChangesRequestDto saveChangesRequestDto)
         {
             var response = new SaveChangesRespondDto();
 
@@ -46,7 +46,7 @@ namespace UserCenter.Infrastructure.Services
             {
                 response.IsSuccess = false;
                 response.Message = "User not found.";
-                return response;
+                return (response, "");
             }
 
             user.NickName = saveChangesRequestDto.NickName;
@@ -54,6 +54,8 @@ namespace UserCenter.Infrastructure.Services
             user.Gender = (short)saveChangesRequestDto.Gender; // Change to short because of database type
 
             var result = await _userManager.UpdateAsync(user);
+
+            String tokenString = "";
             if (result.Succeeded)
             {
                 response.IsSuccess = true;
@@ -61,7 +63,6 @@ namespace UserCenter.Infrastructure.Services
                 response.Data = new SaveChangesRequestDto
                 {
                     UserId = user.Id.ToString(),
-                    Token = GenerateJwtToken(user),// Update token after user information changed
                     NickName = user.UserName ?? "",
                     Email = user.Email ?? "",
                     Avatar = user.AvatarUrl ?? Defaults.DefaultAvatar,
@@ -69,6 +70,7 @@ namespace UserCenter.Infrastructure.Services
                     Phone = user.PhoneNumber ?? "",
                     Gender = user.Gender ?? 0,
                 };
+                tokenString = GenerateJwtToken(user);// Update token after user information changed
             }
             else
             {
@@ -76,7 +78,7 @@ namespace UserCenter.Infrastructure.Services
                 response.Message = string.Join("; ", result.Errors.Select(e => e.Description));
             }
 
-            return response;
+            return (response, tokenString);
         }
 
         /// <summary>

@@ -13,7 +13,7 @@ namespace UserCenter.Core.Interfaces
         // Task<IEnumerator<ApplicationUser>> GetAllUsersAsync();
         // Task<ApplicationUser?> GetUserByIdAsync(int id);
         // Task<ApplicationUser> CreateUserAsync(ApplicationUser applicationUser);
-        Task<SaveChangesRespondDto> UpdateUserAsync(SaveChangesRequestDto saveChangesRequestDto);
+        Task<(SaveChangesRespondDto, string)> UpdateUserAsync(SaveChangesRequestDto saveChangesRequestDto);
         // Task<bool> DeleteUserAsync(int id);
     }
 }
