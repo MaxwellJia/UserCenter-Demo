@@ -66,7 +66,9 @@
 
 2. 访问自己信息时或者重要信息时去验证一下token，用Cookie HTTP only去带token，后端通过 Response.Cookies.Append
    向前端发送cookie并带有token，验证时前端通过请求中设置withCredentials: true,带token给后端 √
-1. 后端通过JwtBearer读取token(后端验证并未完成)
+   后端通过JwtBearer读取token(后端验证并未完成，现在不需要这个步骤)
+    Note: 整体流程：middleware对整体页面进行控制，如果要访问/dashboard/..之后的页面，middleware会去验证token是否存在和过期(其前端会去验证SecretKey)
+          如果过期会跳转到登录页面，token有效则放行，在登出时会向后端发送一个请求，后端会将cookie清除
 
 3. 对用户修改的操作验证user role
 4. 解决登录态的问题

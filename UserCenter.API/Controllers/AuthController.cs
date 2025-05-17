@@ -68,5 +68,20 @@ namespace UserCenter.API.Controllers
 
             return BadRequest(result.Message ?? "Change failed");
         }
+
+        // 登出让 Cookie 立即过期
+        [HttpPost("signOut")]
+        public IActionResult Logout()
+        {
+            Response.Cookies.Append("token", "", new CookieOptions
+            {
+                HttpOnly = true,
+                SameSite = SameSiteMode.Lax,
+                Path = "/",
+                Expires = DateTimeOffset.UtcNow.AddDays(-1) // 立即过期
+            });
+
+            return Ok(new { message = "Logout success" });
+        }
     }
 }
