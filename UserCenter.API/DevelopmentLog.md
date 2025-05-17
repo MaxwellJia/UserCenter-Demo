@@ -72,4 +72,7 @@
 
 3. 对用户修改的操作验证user role
 4. 解决登录态的问题
-5. 解决标签图标问题
+5. 解决标签图标问题 √ 直接加在public/favicon.ico
+6. 后端的生成Token可以被修改到更高层级，因为IAuthService和IUserService都需要用到
+7. IUserService需要新生成一个controller来管理，不能在AuthController中
+8. 修改以下Welcome页面，使其更加美观并加入User元素

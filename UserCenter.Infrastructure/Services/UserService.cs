@@ -33,10 +33,10 @@ namespace UserCenter.Infrastructure.Services
         }
 
         /// <summary>
-        /// Svae user information modified from the client
+        /// Save user information modified from the client
         /// </summary>
         /// <param name="saveChangesRequestDto"></param>
-        /// <returns>SaveChangesRespondDto if succeeded</returns>
+        /// <returns>Tuple of SaveChangesRespondDto and new JWT token string if succeeded</returns>
         public async Task<(SaveChangesRespondDto, string)> UpdateUserAsync(SaveChangesRequestDto saveChangesRequestDto)
         {
             var response = new SaveChangesRespondDto();
@@ -49,14 +49,33 @@ namespace UserCenter.Infrastructure.Services
                 return (response, "");
             }
 
+            // Update Nickname and Phone
             user.NickName = saveChangesRequestDto.NickName;
             user.PhoneNumber = saveChangesRequestDto.Phone;
-            user.Gender = (short)saveChangesRequestDto.Gender; // Change to short because of database type
-            user.Email = saveChangesRequestDto.Email;
+            user.Gender = (short)saveChangesRequestDto.Gender; // assuming your DB column is smallint
+            user.AvatarUrl = saveChangesRequestDto.Avatar;
+            
+            // Update Email using UserManager
+            if (user.Email != saveChangesRequestDto.Email)
+            {
+                var setEmailResult = await _userManager.SetEmailAsync(user, saveChangesRequestDto.Email);
+                if (!setEmailResult.Succeeded)
+                {
+                    // 打印错误信息到控制台（或使用 ILogger 记录）
+                     foreach (var error in setEmailResult.Errors)
+                    {
+                        Console.WriteLine($"[SetEmailAsync Error] Code: {error.Code}, Description: {error.Description}");
+                    }
+                    response.IsSuccess = false;
+                    response.Message = string.Join("; ", setEmailResult.Errors.Select(e => e.Description));
+                    return (response, "");
+                }
+            }
 
+            // Apply changes
             var result = await _userManager.UpdateAsync(user);
 
-            String tokenString = "";
+            string tokenString = "";
             if (result.Succeeded)
             {
                 response.IsSuccess = true;
@@ -64,14 +83,16 @@ namespace UserCenter.Infrastructure.Services
                 response.Data = new SaveChangesRequestDto
                 {
                     UserId = user.Id.ToString(),
-                    NickName = user.UserName ?? "",
+                    NickName = user.NickName ?? "",
                     Email = user.Email ?? "",
                     Avatar = user.AvatarUrl ?? Defaults.DefaultAvatar,
                     UserRole = user.UserRole ?? 0,
                     Phone = user.PhoneNumber ?? "",
                     Gender = user.Gender ?? 0,
                 };
-                tokenString = GenerateJwtToken(user);// Update token after user information changed
+
+                // Regenerate JWT token with updated info
+                tokenString = GenerateJwtToken(user);
             }
             else
             {
@@ -81,6 +102,7 @@ namespace UserCenter.Infrastructure.Services
 
             return (response, tokenString);
         }
+
 
         /// <summary>
         /// Generate JWT token by user information
