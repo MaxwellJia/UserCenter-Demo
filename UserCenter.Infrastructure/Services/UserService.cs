@@ -52,6 +52,7 @@ namespace UserCenter.Infrastructure.Services
             user.NickName = saveChangesRequestDto.NickName;
             user.PhoneNumber = saveChangesRequestDto.Phone;
             user.Gender = (short)saveChangesRequestDto.Gender; // Change to short because of database type
+            user.Email = saveChangesRequestDto.Email;
 
             var result = await _userManager.UpdateAsync(user);
 
