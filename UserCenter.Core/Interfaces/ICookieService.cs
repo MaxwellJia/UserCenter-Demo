@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
+using System.Security.Claims;
 
 namespace UserCenter.Core.Interfaces
 {
@@ -6,5 +7,6 @@ namespace UserCenter.Core.Interfaces
     {
         void AppendAuthTokenCookie(HttpResponse response, string token);
         void ExpireAuthTokenCookie(HttpResponse response);
+        ClaimsPrincipal? ValidateToken(HttpRequest request);
     }
 }

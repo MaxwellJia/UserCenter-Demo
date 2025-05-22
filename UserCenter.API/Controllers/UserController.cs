@@ -9,30 +9,34 @@ namespace UserCenter.API.Controllers
     public class UserController : ControllerBase
     {
         private readonly IUserService _userService;
+        private readonly ICookieService _cookieService;
 
-        public UserController(IUserService userService)
+        public UserController(IUserService userService, ICookieService cookieService)
         {
             _userService = userService;
+            _cookieService = cookieService;
         }
 
+        
+
         [HttpPost("saveChanges")]
-        public async Task<IActionResult> SaveChanges([FromBody] SaveChangesRequestDto saveChangesRequestDto)
+        public async Task<IActionResult> SaveChanges([FromBody] SaveChangesRequestDto dto)
         {
-            var (result, tokenString) = await _userService.UpdateUserAsync(saveChangesRequestDto);
+            var principal = _cookieService.ValidateToken(Request);
+            if (principal == null)
+            {
+                return Unauthorized(new { message = "Invalid or expired token" });
+            }
+
+            var (result, tokenString) = await _userService.UpdateUserAsync(dto);
             if (result.IsSuccess && result.Data != null)
             {
-                Response.Cookies.Append("token", tokenString, new CookieOptions
-                {
-                    HttpOnly = true,
-                    Secure = true, // 本地开发设为 false
-                    SameSite = SameSiteMode.Strict,
-                    Expires = DateTimeOffset.UtcNow.AddHours(1)
-                });
-
+                _cookieService.AppendAuthTokenCookie(Response, tokenString);
                 return Ok(result);
             }
 
             return BadRequest(result.Message ?? "Change failed");
         }
+
     }
 }

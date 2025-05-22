@@ -115,8 +115,8 @@
 ### 后端优化
 - 后端的生成 Token 可以被修改到更高层级，因为 `IAuthService` 和 `IUserService` 都需要用到 (在Helpers里) ✅
 - `IUserService` 需要新生成一个 controller 来管理，不能在 `AuthController` 中（更新到了UserController, 前端也做出了访问地址的改变） ✅
-- saveChanegs优化一下，去验证一下token，而不是直接返回新token
-- 优化cookie的生成验证，使其成为一个文件，controller里边可以随时调用
+- saveChanegs优化一下，去验证一下token，而不是直接返回新token✅ 现在为验证token，token过期重新登陆，不过期可以修改
+- 优化cookie的生成验证，使其成为一个文件，controller里边可以随时调用✅（将cookie写成一个service来调用操作cookie）
 
 ### 前端优化
 - 优化一下welcome页面，使其更加专业美观
