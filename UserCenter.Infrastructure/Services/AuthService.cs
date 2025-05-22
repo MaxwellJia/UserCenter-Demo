@@ -16,7 +16,7 @@ using System.Security.Claims;
 using Microsoft.Extensions.Logging;
 using UserCenter.API.DTOs.Auth;
 using UserCenter.Infrastructure.Constants;
-
+using UserCenter.Infrastructure.Helpers;
 namespace UserCenter.Infrastructure.Services
 {
     public class AuthService : IAuthService
@@ -72,7 +72,7 @@ namespace UserCenter.Infrastructure.Services
             if (result.Succeeded)
             {
                 response.IsSuccess = true;
-                response.Data = GenerateJwtToken(user);
+                response.Data = TokenGenerator.GenerateToken(user, _jwtSettings);
             }
             else {
                 response.Message = string.Join(", ", result.Errors.Select(e => e.Description));
@@ -166,37 +166,9 @@ namespace UserCenter.Infrastructure.Services
                 Phone = user.PhoneNumber ?? "",
                 Gender = user.Gender ?? 0,
             };
-            String Token = GenerateJwtToken(user);
-            
+            String Token = TokenGenerator.GenerateToken(user, _jwtSettings);
+
             return (response, Token);
-        }
-
-        /// <summary>
-        /// Generate JWT token by user information
-        /// </summary>
-        /// <param name="user">user information</param>
-        /// <returns>JWT token string</returns>
-        private string GenerateJwtToken(ApplicationUser user)
-
-        {
-            var claims = new[]
-            {
-                new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
-                new Claim(JwtRegisteredClaimNames.UniqueName, user.UserName ?? string.Empty)
-            };
-
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.SecretKey));
-            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-
-            var token = new JwtSecurityToken(
-                issuer: _jwtSettings.Issuer,
-                audience: _jwtSettings.Audience,
-                claims: claims,
-                expires: DateTime.UtcNow.AddMinutes(_jwtSettings.ExpirationMinutes),
-                signingCredentials: creds
-            );
-
-            return new JwtSecurityTokenHandler().WriteToken(token);
         }
     }
 }

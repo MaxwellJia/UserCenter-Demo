@@ -14,6 +14,7 @@ using UserCenter.Core.DTOs.Auth;
 using UserCenter.Core.Entities;
 using UserCenter.Core.Interfaces;
 using UserCenter.Infrastructure.Constants;
+using UserCenter.Infrastructure.Helpers;
 
 namespace UserCenter.Infrastructure.Services
 {
@@ -92,7 +93,7 @@ namespace UserCenter.Infrastructure.Services
                 };
 
                 // Regenerate JWT token with updated info
-                tokenString = GenerateJwtToken(user);
+                tokenString = TokenGenerator.GenerateToken(user, _jwtSettings);
             }
             else
             {
@@ -101,35 +102,6 @@ namespace UserCenter.Infrastructure.Services
             }
 
             return (response, tokenString);
-        }
-
-
-        /// <summary>
-        /// Generate JWT token by user information
-        /// </summary>
-        /// <param name="user">user information</param>
-        /// <returns>JWT token string</returns>
-        private string GenerateJwtToken(ApplicationUser user)
-
-        {
-            var claims = new[]
-            {
-                new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
-                new Claim(JwtRegisteredClaimNames.UniqueName, user.UserName ?? string.Empty)
-            };
-
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.SecretKey));
-            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-
-            var token = new JwtSecurityToken(
-                issuer: _jwtSettings.Issuer,
-                audience: _jwtSettings.Audience,
-                claims: claims,
-                expires: DateTime.UtcNow.AddMinutes(_jwtSettings.ExpirationMinutes),
-                signingCredentials: creds
-            );
-
-            return new JwtSecurityTokenHandler().WriteToken(token);
         }
     }
 }

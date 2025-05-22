@@ -113,7 +113,7 @@
 ## 相关计划
 
 ### 后端优化
-- 后端的生成 Token 可以被修改到更高层级，因为 `IAuthService` 和 `IUserService` 都需要用到  
+- 后端的生成 Token 可以被修改到更高层级，因为 `IAuthService` 和 `IUserService` 都需要用到 (在Helpers里) ✅
 - `IUserService` 需要新生成一个 controller 来管理，不能在 `AuthController` 中
 - saveChanegs优化一下，去验证一下token，而不是直接返回新token
 - 优化cookie的生成验证，使其成为一个文件，controller里边可以随时调用
@@ -126,6 +126,7 @@
 - 前端首次跳转到welcome页面时不加载local stroage数据
 - saveChanges第一次不会修改任何内容，第二次之后才会修改
 - useContext一些相关的钩子
+- 直接关闭网页的话local strotage的数据不会被清除，是否需要清除
 
 ### 推进项目
 - 生成用户管理的form，去管理用户
