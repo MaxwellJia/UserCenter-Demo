@@ -63,6 +63,8 @@ namespace UserCenter.API
             builder.Services.AddAuthentication();
             builder.Services.AddAuthorization();
             builder.Services.AddScoped<IUserService, UserService>();
+            builder.Services.AddScoped<ICookieService, CookieService>();
+
 
             // ÆäËû Service ×¢²á...
             builder.Services.AddScoped<IAuthService, AuthService>();

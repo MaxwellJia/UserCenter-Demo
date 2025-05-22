@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using UserCenter.Core.DTOs.Auth;
 using UserCenter.Core.Interfaces;
+using UserCenter.Infrastructure.Services;
 
 namespace UserCenter.API.Controllers
 {
@@ -12,10 +13,14 @@ namespace UserCenter.API.Controllers
 
         private readonly IUserService _userService;
 
-        public AuthController(IAuthService authService, IUserService userService)
+        // 这里可以使用 CookieService 来处理 Cookie
+        private readonly ICookieService _cookieService;
+
+        public AuthController(IAuthService authService, IUserService userService, ICookieService cookieService)
         {
             _authService = authService;
             _userService = userService;
+            _cookieService = cookieService;
         }
 
 
@@ -34,13 +39,8 @@ namespace UserCenter.API.Controllers
             if (result.IsSuccess && result.Data != null)
             {
                 // 设置 HttpOnly Cookie
-                Response.Cookies.Append("token", tokenString, new CookieOptions
-                {
-                    HttpOnly = true,
-                    Secure = true, // 本地开发设为 false
-                    SameSite = SameSiteMode.Strict,
-                    Expires = DateTimeOffset.UtcNow.AddHours(1)
-                });
+                _cookieService.AppendAuthTokenCookie(Response, tokenString);
+
 
                 return Ok(result); // 可返回用户信息给前端使用
             }
@@ -52,13 +52,7 @@ namespace UserCenter.API.Controllers
         [HttpPost("signOut")]
         public IActionResult Logout()
         {
-            Response.Cookies.Append("token", "", new CookieOptions
-            {
-                HttpOnly = true,
-                SameSite = SameSiteMode.Lax,
-                Path = "/",
-                Expires = DateTimeOffset.UtcNow.AddDays(-1) // 立即过期
-            });
+            _cookieService.ExpireAuthTokenCookie(Response);
 
             return Ok(new { message = "Logout success" });
         }
