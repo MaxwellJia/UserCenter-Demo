@@ -1,4 +1,4 @@
-
+ï»¿
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using UserCenter.Core.Configuration;
@@ -6,6 +6,9 @@ using UserCenter.Core.Entities;
 using UserCenter.Core.Interfaces;
 using UserCenter.Infrastructure.Data;
 using UserCenter.Infrastructure.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace UserCenter.API
 {
@@ -17,30 +20,30 @@ namespace UserCenter.API
 
             // Add services to the container.
 
-            // ¶ÁÈ¡Á¬½Ó×Ö·û´®
+            // è¯»å–è¿æ¥å­—ç¬¦ä¸²
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
-            // ×¢²á DbContext
+            // æ³¨å†Œ DbContext
             builder.Services.AddDbContext<UserCenterDbContext>(options =>
                 options.UseNpgsql(connectionString));
 
-            // ×¢²á JWT ÈÏÖ¤
+            // æ³¨å†Œ JWT è®¤è¯
             builder.Services.Configure<JwtSettings>(
                 builder.Configuration.GetSection("JwtSettings"));
 
-            // ×¢²á CORS ²ßÂÔ
+            // æ³¨å†Œ CORS ç­–ç•¥
             builder.Services.AddCors(options =>
             {
                 options.AddPolicy("AllowFrontend", policy =>
                 {
-                    policy.WithOrigins("http://localhost:3000") // ÄãµÄÇ°¶ËµØÖ·
+                    policy.WithOrigins("http://localhost:3000") // ä½ çš„å‰ç«¯åœ°å€
                           .AllowAnyHeader()
                           .AllowAnyMethod()
-                          .AllowCredentials(); // ÔÊĞí Cookie£¨HTTP ONLY ±ØĞë´øÉÏ£©
+                          .AllowCredentials(); // å…è®¸ Cookieï¼ˆHTTP ONLY å¿…é¡»å¸¦ä¸Šï¼‰
                 });
             });
 
-            // ×¢²á Identity
+            // æ³¨å†Œ Identity
             builder.Services.AddIdentity<ApplicationUser, IdentityRole<Guid>>(options =>
             {
                 options.Password.RequireDigit = false;
@@ -52,26 +55,69 @@ namespace UserCenter.API
             .AddEntityFrameworkStores<UserCenterDbContext>()
             .AddDefaultTokenProviders();
 
-            // ±ØĞëÌí¼ÓÕâÒ»ĞĞ£¡×¢²á Controller ·şÎñ
+            // å¿…é¡»æ·»åŠ è¿™ä¸€è¡Œï¼æ³¨å†Œ Controller æœåŠ¡
             builder.Services.AddControllers();
 
-            // ¼ÓÉÏÕâÁ½ĞĞ£¬ÆôÓÃ Swagger
+            // åŠ ä¸Šè¿™ä¸¤è¡Œï¼Œå¯ç”¨ Swagger
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
-            // ×¢²áÈÏÖ¤ + ÊÚÈ¨·şÎñ + ÓÃ»§Ïà¹Ø·şÎñ
-            builder.Services.AddAuthentication();
+            // æ³¨å†Œè®¤è¯ + æˆæƒæœåŠ¡ + ç”¨æˆ·ç›¸å…³æœåŠ¡
+            builder.Services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+.AddJwtBearer(options =>
+{
+    var jwtSettings = builder.Configuration.GetSection("JwtSettings").Get<JwtSettings>();
+
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = jwtSettings.Issuer,
+        ValidAudience = jwtSettings.Audience,
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.SecretKey)),
+        ClockSkew = TimeSpan.Zero
+    };
+
+    options.Events = new JwtBearerEvents
+    {
+        OnMessageReceived = context =>
+        {
+            var token = context.Request.Cookies["token"];
+            context.Response.Headers.Append("X-Debug-Token", token ?? "no-token");
+
+            if (!string.IsNullOrEmpty(token))
+            {
+                context.Token = token;
+            }
+
+            return Task.CompletedTask;
+        },
+        OnAuthenticationFailed = context =>
+        {
+            context.Response.Headers.Append("X-Debug-AuthError", context.Exception.Message);
+            return Task.CompletedTask;
+        }
+    };
+});
+
+
             builder.Services.AddAuthorization();
             builder.Services.AddScoped<IUserService, UserService>();
             builder.Services.AddScoped<ICookieService, CookieService>();
 
 
-            // ÆäËû Service ×¢²á...
+            // å…¶ä»– Service æ³¨å†Œ...
             builder.Services.AddScoped<IAuthService, AuthService>();
 
             var app = builder.Build();
 
-            // ¿ª·¢»·¾³ÆôÓÃ Swagger
+            // å¼€å‘ç¯å¢ƒå¯ç”¨ Swagger
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();

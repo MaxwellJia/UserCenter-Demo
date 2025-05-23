@@ -24,10 +24,21 @@ namespace UserCenter.Infrastructure.Services
             {
                 HttpOnly = true,
                 Secure = true, // 本地开发设为 false
-                SameSite = SameSiteMode.Strict,
+                SameSite = SameSiteMode.None,
                 Expires = DateTimeOffset.UtcNow.AddHours(1)
             });
         }
+        // TODO: 线上环境可参考
+        //if (_env.IsDevelopment())
+        //{
+        //options.SameSite = SameSiteMode.Lax;
+        //options.Secure = false;
+        //}
+        //else
+        //{
+        //options.SameSite = SameSiteMode.None;
+        //options.Secure = true;
+        //}
 
         public void ExpireAuthTokenCookie(HttpResponse response)
         {

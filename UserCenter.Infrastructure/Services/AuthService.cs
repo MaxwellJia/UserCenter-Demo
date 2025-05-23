@@ -72,7 +72,7 @@ namespace UserCenter.Infrastructure.Services
             if (result.Succeeded)
             {
                 response.IsSuccess = true;
-                response.Data = TokenGenerator.GenerateToken(user, _jwtSettings);
+                response.Data = TokenGenerate.GenerateToken(user, _jwtSettings);
             }
             else {
                 response.Message = string.Join(", ", result.Errors.Select(e => e.Description));
@@ -166,7 +166,7 @@ namespace UserCenter.Infrastructure.Services
                 Phone = user.PhoneNumber ?? "",
                 Gender = user.Gender ?? 0,
             };
-            String Token = TokenGenerator.GenerateToken(user, _jwtSettings);
+            String Token = TokenGenerate.GenerateToken(user, _jwtSettings);
 
             return (response, Token);
         }

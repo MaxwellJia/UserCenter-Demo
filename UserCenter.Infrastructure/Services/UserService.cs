@@ -11,17 +11,18 @@ using System.Text;
 using System.Threading.Tasks;
 using UserCenter.Core.Configuration;
 using UserCenter.Core.DTOs.Auth;
+using UserCenter.Core.DTOs.User;
 using UserCenter.Core.Entities;
 using UserCenter.Core.Interfaces;
 using UserCenter.Infrastructure.Constants;
 using UserCenter.Infrastructure.Helpers;
+using Microsoft.EntityFrameworkCore;
 
 namespace UserCenter.Infrastructure.Services
 {
     public class UserService : IUserService
     {
         private readonly UserManager<ApplicationUser> _userManager;
-        private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly JwtSettings _jwtSettings;
         public UserService(
             UserManager<ApplicationUser> userManager,
@@ -29,8 +30,41 @@ namespace UserCenter.Infrastructure.Services
             IOptions<JwtSettings> jwtSettings)
         {
             _userManager = userManager;
-            _signInManager = signInManager;
             _jwtSettings = jwtSettings.Value;
+        }
+
+        /// <summary>
+        /// 获取系统中所有用户的信息（仅供管理员使用）
+        /// </summary>
+        /// <returns>包含所有用户基本信息的列表（UserQueryDto）</returns>
+        public async Task<List<UserQueryDto>> GetAllUsersAsync()
+        {
+            var users = await _userManager.Users.ToListAsync(); ;
+
+            // 可以根据实际需要做投影映射
+            return users.Select(user => new UserQueryDto
+            {
+                UserId = user.Id.ToString(),
+                NickName = user.NickName ?? "",
+                Email = user.Email ?? "",
+                Avatar = user.AvatarUrl ?? Defaults.DefaultAvatar,
+                Gender = user.Gender ?? 0,
+                UserRole = user.UserRole ?? 0,
+                UserName = user.UserName ?? "",
+                Password = user.PasswordHash ?? "",
+                Phone = user.PhoneNumber ?? "",
+            }).ToList();
+        }
+
+        /// <summary>
+        /// 检查指定用户是否为管理员角色（UserRole == "1"）
+        /// </summary>
+        /// <param name="userId">用户的唯一标识符（Id）</param>
+        /// <returns>如果用户存在且角色为管理员，返回 true；否则返回 false</returns>
+        public async Task<bool> IsUserAdminAsync(string userId)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+            return user != null && user.UserRole == 1;
         }
 
         /// <summary>
@@ -93,7 +127,7 @@ namespace UserCenter.Infrastructure.Services
                 };
 
                 // Regenerate JWT token with updated info
-                tokenString = TokenGenerator.GenerateToken(user, _jwtSettings);
+                tokenString = TokenGenerate.GenerateToken(user, _jwtSettings);
             }
             else
             {
