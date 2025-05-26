@@ -51,7 +51,6 @@ namespace UserCenter.Infrastructure.Services
                 Gender = user.Gender ?? 0,
                 UserRole = user.UserRole ?? 0,
                 UserName = user.UserName ?? "",
-                Password = user.PasswordHash ?? "",
                 Phone = user.PhoneNumber ?? "",
             }).ToList();
         }

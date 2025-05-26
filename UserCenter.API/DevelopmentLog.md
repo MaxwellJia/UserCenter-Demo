@@ -130,4 +130,12 @@
 
 ### 推进项目
 - 生成用户管理的form，去管理用户
+   - Bug: 返回给前端的信息需要进行优化，例如不返回密码(不能让他看到，可以给接口修改), userId是否有必要返回等等 需要详细讨论
+   - 整体规划:
+   - 在list接口的基础上进行修改
+   - 前端采用ant design pro table进行处理
+   - 前端传递params参数给后端，params参数会写到TypeScript里，包含的属性有currentPage，pageSize，以及各个属性是否被加入筛选及筛选的值，用object表示key:value
+   - 后端接受params参数并且抽象为一个DTO,DTO传递给service层进行查询和返回相关数据，service可能会用到LINQ
+
+-  前端如何写和规划才合理之类的
 - 后端生成接口去完成前端的请求filter, search, sort，分页还有相关功能

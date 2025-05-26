@@ -22,6 +22,6 @@
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.11" />
   </ItemGroup>
 
-  <ProjectExtensions><VisualStudio><UserProperties constants_4defaultinformation_1json__JsonSchema="https://json.schemastore.org/BizTalkServerApplicationSchema.json" /></VisualStudio></ProjectExtensions>
+  <ProjectExtensions><VisualStudio><UserProperties /></VisualStudio></ProjectExtensions>
 
 </Project>
