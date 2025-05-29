@@ -42,25 +42,20 @@ namespace UserCenter.API.Controllers
         }
         [Authorize]
         [HttpGet("list")]
-        public async Task<IActionResult> GetAllUsers()
+        public async Task<IActionResult> GetAllUsers([FromQuery] FilterUserDto filter)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
             if (string.IsNullOrEmpty(userId))
-            {
                 return Unauthorized("User didn't log in");
-            }
 
-            var isAdmin = await _userService.IsUserAdminAsync(userId);
-            if (!isAdmin)
-            {
-
+            if (!await _userService.IsUserAdminAsync(userId))
                 return StatusCode(StatusCodes.Status403Forbidden, "Insufficient permissions, only administrators can access");
-            }
 
-            var users = await _userService.GetAllUsersAsync();
-            return Ok(new { data = users, total = users.Count });
+            var (users, total) = await _userService.FilterUsersAsync(filter);
+            return Ok(new { data = users, total });
         }
+
+
 
     }
 }

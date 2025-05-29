@@ -17,6 +17,8 @@ using UserCenter.Core.Interfaces;
 using UserCenter.Infrastructure.Constants;
 using UserCenter.Infrastructure.Helpers;
 using Microsoft.EntityFrameworkCore;
+using UserCenter.Infrastructure.Data;
+
 
 namespace UserCenter.Infrastructure.Services
 {
@@ -24,11 +26,15 @@ namespace UserCenter.Infrastructure.Services
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly JwtSettings _jwtSettings;
+        private readonly UserCenterDbContext _context;
         public UserService(
+            UserCenterDbContext context,
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
+
             IOptions<JwtSettings> jwtSettings)
         {
+            _context = context;
             _userManager = userManager;
             _jwtSettings = jwtSettings.Value;
         }
@@ -37,22 +43,54 @@ namespace UserCenter.Infrastructure.Services
         /// 获取系统中所有用户的信息（仅供管理员使用）
         /// </summary>
         /// <returns>包含所有用户基本信息的列表（UserQueryDto）</returns>
-        public async Task<List<UserQueryDto>> GetAllUsersAsync()
+        public async Task<(List<UserQueryDto> Users, int Total)> FilterUsersAsync(FilterUserDto filter)
         {
-            var users = await _userManager.Users.ToListAsync(); ;
+            var query = _context.Users.AsQueryable();
 
-            // 可以根据实际需要做投影映射
-            return users.Select(user => new UserQueryDto
-            {
-                UserId = user.Id.ToString(),
-                NickName = user.NickName ?? "",
-                Email = user.Email ?? "",
-                Avatar = user.AvatarUrl ?? Defaults.DefaultAvatar,
-                Gender = user.Gender ?? 0,
-                UserRole = user.UserRole ?? 0,
-                UserName = user.UserName ?? "",
-                Phone = user.PhoneNumber ?? "",
-            }).ToList();
+            if (filter.Id.HasValue)
+                query = query.Where(u => u.Id == filter.Id);
+
+            if (!string.IsNullOrEmpty(filter.Username))
+                query = query.Where(u => (u.NickName ?? "").Contains(filter.Username));
+
+            if (!string.IsNullOrEmpty(filter.NickName))
+                query = query.Where(u => (u.NickName ?? "").Contains(filter.NickName));
+
+            if (!string.IsNullOrEmpty(filter.AvatarUrl))
+                query = query.Where(u => (u.AvatarUrl ?? "").Contains(filter.AvatarUrl));
+
+            if (filter.Gender.HasValue)
+                query = query.Where(u => u.Gender == filter.Gender.Value);
+
+            if (!string.IsNullOrEmpty(filter.Phone))
+                query = query.Where(u => (u.PhoneNumber ?? "").Contains(filter.Phone));
+
+            if (!string.IsNullOrEmpty(filter.Email))
+                query = query.Where(u => (u.Email ?? "").Contains(filter.Email));
+
+            if (filter.UserRole.HasValue)
+                query = query.Where(u => u.UserRole == filter.UserRole.Value);
+
+            var total = await query.CountAsync();
+
+            var users = await query
+                .OrderBy(u => u.UserName)
+                .Skip((filter.Current - 1) * filter.PageSize)
+                .Take(filter.PageSize)
+                .Select(u => new UserQueryDto
+                {
+                    UserId = u.Id.ToString(),
+                    Avatar = u.AvatarUrl ?? "",
+                    NickName = u.NickName ?? "",
+                    Email = u.Email ?? "",
+                    UserRole = (int)(u.UserRole ?? 0),
+                    Gender = (int)(u.Gender ?? 0),
+                    UserName = u.UserName ?? "",
+                    Phone = u.PhoneNumber ?? ""
+                })
+                .ToListAsync();
+
+            return (users, total);
         }
 
         /// <summary>

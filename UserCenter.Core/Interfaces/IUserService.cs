@@ -13,7 +13,7 @@ namespace UserCenter.Core.Interfaces
     {
         Task<(SaveChangesRespondDto, string)> UpdateUserAsync(SaveChangesRequestDto saveChangesRequestDto);
 
-        Task<List<UserQueryDto>> GetAllUsersAsync();
+        Task<(List<UserQueryDto> Users, int Total)> FilterUsersAsync(FilterUserDto filter);
 
         Task<bool> IsUserAdminAsync(string userId);
     }
