@@ -140,3 +140,10 @@
 
 -  前端如何写和规划才合理之类的
 - 后端生成接口去完成前端的请求filter, search, sort，分页还有相关功能
+
+### 2025/05/29
+- 已知list的bug：
+  - 1. 输入User ID后仍返回整个数据 数据传输的名字要保持一致，params的名字就算用TypeScript名字传输时还会保持原样(模糊查询待处理)
+	2. 输入UserName后只有MaxwellJia的返回正确 Service层有一个Bug，已解决
+	3. 输入Famle时查询结果不返回 生成的数据默认gender是null，现注册分配默认值为1，就是男性
+	4. UserRole查询结果同样不返回正确的niormal user

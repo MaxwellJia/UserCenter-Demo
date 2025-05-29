@@ -44,6 +44,10 @@ namespace UserCenter.API.Controllers
         [HttpGet("list")]
         public async Task<IActionResult> GetAllUsers([FromQuery] FilterUserDto filter)
         {
+            foreach (var key in Request.Query.Keys)
+            {
+                Console.WriteLine($"[QUERY PARAM] {key}: {Request.Query[key]}");
+            }
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (string.IsNullOrEmpty(userId))
                 return Unauthorized("User didn't log in");

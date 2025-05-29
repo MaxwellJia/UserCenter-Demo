@@ -65,6 +65,9 @@ namespace UserCenter.Infrastructure.Services
                 IsDelete = 0,
                 UserStatus = 1,
                 UserRole = 0,
+                Gender = 1,// Initialize gender to male
+                Email = registerUserDto.Email, // Initialize email
+                NickName =  registerUserDto.Username, // Use username as nickname if not provided
             };
 
             var result = await _userManager.CreateAsync(user, registerUserDto.Password);
@@ -83,7 +86,7 @@ namespace UserCenter.Infrastructure.Services
         /// <summary>
         /// Custom validation for register and login input
         /// 
-        ///Username verification:
+        ///UserName verification:
         ///Length: 3-32 characters.
         ///Limited to: letters, numbers, and underscores(a-zA-Z0-9_).
         ///
@@ -99,10 +102,10 @@ namespace UserCenter.Infrastructure.Services
         /// <returns></returns>
         private string ValidateRegisterLoginInput(dynamic dto, bool isRegister = false)
         {
-            // Username validation using regex
-            if (string.IsNullOrWhiteSpace(dto.Username)) return "Username is required.";
+            // UserName validation using regex
+            if (string.IsNullOrWhiteSpace(dto.Username)) return "UserName is required.";
             if (!System.Text.RegularExpressions.Regex.IsMatch(dto.Username, "^(?=.{3,32}$)[a-zA-Z0-9_]+$"))
-                return "Username must be 3-32 characters and can only contain letters, numbers, and underscores.";
+                return "UserName must be 3-32 characters and can only contain letters, numbers, and underscores.";
 
             // Password validation using regex
             if (string.IsNullOrWhiteSpace(dto.Password)) return "Password is required.";

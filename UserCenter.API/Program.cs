@@ -10,12 +10,15 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
+
 namespace UserCenter.API
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
+            
+
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
@@ -122,6 +125,15 @@ namespace UserCenter.API
             {
                 app.UseSwagger();
                 app.UseSwaggerUI();
+            }
+
+            using (var scope = app.Services.CreateScope())
+            {
+                var services = scope.ServiceProvider;
+                var dbContext = services.GetRequiredService<UserCenterDbContext>();
+                var seeder = new DataSeeder(dbContext);
+                Console.WriteLine("[Seeder] 开始生成用户数据");
+                await seeder.SeedUsersAsync(500); // 👈 你想生成的数量
             }
 
             // Allow all frontend access

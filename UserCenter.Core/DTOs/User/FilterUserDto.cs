@@ -1,8 +1,8 @@
 ﻿// DTOs/FilterUserDto.cs
 public class FilterUserDto
 {
-    public Guid? Id { get; set; }
-    public string? Username { get; set; }
+    public string? Id { get; set; }
+    public string? UserName { get; set; }
     public string? NickName { get; set; }
     public string? AvatarUrl { get; set; }
     public int? Gender { get; set; }

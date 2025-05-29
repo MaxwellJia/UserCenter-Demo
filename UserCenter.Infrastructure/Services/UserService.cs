@@ -47,11 +47,14 @@ namespace UserCenter.Infrastructure.Services
         {
             var query = _context.Users.AsQueryable();
 
-            if (filter.Id.HasValue)
-                query = query.Where(u => u.Id == filter.Id);
+            if (!string.IsNullOrEmpty(filter.Id) && Guid.TryParse(filter.Id, out var guidId))
+            {
+                query = query.Where(u => u.Id == guidId);
+            }
 
-            if (!string.IsNullOrEmpty(filter.Username))
-                query = query.Where(u => (u.NickName ?? "").Contains(filter.Username));
+            if (!string.IsNullOrEmpty(filter.UserName)) { 
+                query = query.Where(u => (u.UserName ?? "").Contains(filter.UserName));
+            }
 
             if (!string.IsNullOrEmpty(filter.NickName))
                 query = query.Where(u => (u.NickName ?? "").Contains(filter.NickName));
@@ -79,8 +82,8 @@ namespace UserCenter.Infrastructure.Services
                 .Take(filter.PageSize)
                 .Select(u => new UserQueryDto
                 {
-                    UserId = u.Id.ToString(),
-                    Avatar = u.AvatarUrl ?? "",
+                    Id = u.Id.ToString(),
+                    AvatarUrl = u.AvatarUrl ?? "",
                     NickName = u.NickName ?? "",
                     Email = u.Email ?? "",
                     UserRole = (int)(u.UserRole ?? 0),
