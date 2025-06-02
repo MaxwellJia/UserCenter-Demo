@@ -141,9 +141,56 @@
 -  前端如何写和规划才合理之类的
 - 后端生成接口去完成前端的请求filter, search, sort，分页还有相关功能
 
-### 2025/05/29
+## 2025/05/29
 - 已知list的bug：
   - 1. 输入User ID后仍返回整个数据 数据传输的名字要保持一致，params的名字就算用TypeScript名字传输时还会保持原样(模糊查询待处理)
 	2. 输入UserName后只有MaxwellJia的返回正确 Service层有一个Bug，已解决
 	3. 输入Famle时查询结果不返回 生成的数据默认gender是null，现注册分配默认值为1，就是男性
-	4. UserRole查询结果同样不返回正确的niormal user
+	4. UserRole查询结果同样不返回正确的normal user 已修复
+
+- 前端的工作list
+   1. 明暗交替user list太亮 Pro Table嵌套太多，优化需要用ant design pro本身的按钮(考虑后来换table，留以后修复)
+   2. 前端需要优化为英文
+   3. 前端edit、delete等按钮需要进行优化，后端需要写相关接口
+
+## 2025/06/02
+- 项目计划
+  - 1. 更换Table list组件在完成当前ant design pro后，用cursor进行
+	2. 当前需完成前端edit、delete等按钮需要进行优化，后端需要写相关接口
+
+### 删除功能的实现
+
+#### 前端实现
+
+- 前端按钮处调用delete api
+- 写delete api
+- isDelete问题，如果用户的isDelete属性为1，则数据不显示在前端表格中，因为其已经被删除
+
+#### 后端实现
+
+- 后端先写interface
+- 再写service，service修改数据库只是让用户的isDelete属性改为1
+- 最后写controller，其接受id参数并将其转换为Gui类型
+
+----
+### 更新用户功能的实现
+
+#### 前端实现
+- 前端修改相关按钮
+- 修改api传数据给后端
+- 点击edit后的save和delete问题
+
+#### 后端实现
+- 后端先写interface
+- 再写service，service中去查找该用户并去修改该用户信息
+- 最后写controller，其接受相关参数并进行处理
+
+#### 其他问题
+- edit点击后的delete如何生效--在editable中加onSave进行修改
+
+### 日后相关工作(等待Bill完成前端优化后做)
+- 前端Protable英文化
+- 前端代码注释优化为英文标准格式
+- 前端优化为英文
+- Toast弹窗增加到合适位置
+- 校验用户身份，没有管理权限的用户看不到用户修改的table

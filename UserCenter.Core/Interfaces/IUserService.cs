@@ -16,5 +16,11 @@ namespace UserCenter.Core.Interfaces
         Task<(List<UserQueryDto> Users, int Total)> FilterUsersAsync(FilterUserDto filter);
 
         Task<bool> IsUserAdminAsync(string userId);
+
+        Task<bool> SoftDeleteUserAsync(Guid userId);
+
+        Task<bool> UpdateUserAsync(UpdateUserDto dto);
+        
+
     }
 }

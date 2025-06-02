@@ -40,12 +40,55 @@ namespace UserCenter.Infrastructure.Services
         }
 
         /// <summary>
+        /// 更新该用户的信息（仅供管理员使用）
+        /// </summary>
+        /// <returns>返回是否修改成功的布尔变量</returns>
+        public async Task<bool> UpdateUserAsync(UpdateUserDto dto)
+        {
+            var user = await _context.Users.FindAsync(dto.Id);
+            if (user == null || user.IsDelete == 1)
+                return false;
+
+            user.UserName = dto.UserName;
+            user.NickName = dto.NickName;
+            user.AvatarUrl = dto.AvatarUrl;
+            user.Email = dto.Email;
+            user.PhoneNumber = dto.Phone;
+            user.Gender = dto.Gender;
+            user.UserRole = dto.UserRole;
+            user.UpdateTime = DateTime.UtcNow;
+
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
+
+        /// <summary>
+        /// 删除用户的相关信息（仅供管理员使用）
+        /// </summary>
+        /// <returns>返回是否删除成功，删除只是让用户的isDelete属性改为1，为保留备份（UserQueryDto）</returns>
+        public async Task<bool> SoftDeleteUserAsync(Guid userId)
+        {
+            var user = await _context.Users.FindAsync(userId);
+            if (user == null || user.IsDelete == 1)
+                return false;
+
+            user.IsDelete = 1;
+            user.UpdateTime = DateTime.UtcNow;
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
+
+        /// <summary>
         /// 获取系统中所有用户的信息（仅供管理员使用）
         /// </summary>
         /// <returns>包含所有用户基本信息的列表（UserQueryDto）</returns>
         public async Task<(List<UserQueryDto> Users, int Total)> FilterUsersAsync(FilterUserDto filter)
         {
-            var query = _context.Users.AsQueryable();
+            var query = _context.Users
+            .Where(u => u.IsDelete == 0)
+            .AsQueryable();
 
             if (!string.IsNullOrEmpty(filter.Id) && Guid.TryParse(filter.Id, out var guidId))
             {
