@@ -20,8 +20,6 @@ namespace UserCenter.Infrastructure.Helpers
                 new Claim(ClaimTypes.Name, user.UserName ?? string.Empty),  // 可选：更好支持框架通用行为
             };
 
-            Console.WriteLine(user.Id.ToString() + " " + " 999999999999999999999999999999");
-
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.SecretKey));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
