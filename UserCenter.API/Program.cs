@@ -151,14 +151,26 @@ namespace UserCenter.API
                 app.UseSwaggerUI();
             }
 
-            using (var scope = app.Services.CreateScope())
+            // ✅ 添加 Seeder 的异常保护
+            if (app.Environment.IsDevelopment())
             {
-                var services = scope.ServiceProvider;
-                var dbContext = services.GetRequiredService<UserCenterDbContext>();
-                var seeder = new DataSeeder(dbContext);
-                Console.WriteLine("[Seeder] 开始生成用户数据");
-                await seeder.SeedUsersAsync(500); // 👈 你想生成的数量
+                using (var scope = app.Services.CreateScope())
+                {
+                    try
+                    {
+                        var services = scope.ServiceProvider;
+                        var dbContext = services.GetRequiredService<UserCenterDbContext>();
+                        var seeder = new DataSeeder(dbContext);
+                        Console.WriteLine("[Seeder] 开始生成用户数据");
+                        await seeder.SeedUsersAsync(500); // 👈 可根据需要更改为较小数量
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("[Seeder] 数据种子失败: " + ex.Message);
+                    }
+                }
             }
+
 
             // Allow all frontend access
             app.UseCors("AllowFrontend");
