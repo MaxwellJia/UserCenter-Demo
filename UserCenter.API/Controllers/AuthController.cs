@@ -42,6 +42,7 @@ namespace UserCenter.API.Controllers
                 _cookieService.AppendAuthTokenCookie(Response, tokenString);
 
 
+
                 return Ok(result); // 可返回用户信息给前端使用
             }
 
