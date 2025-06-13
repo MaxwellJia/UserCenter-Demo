@@ -59,7 +59,7 @@ namespace UserCenter.API
             {
                 options.AddPolicy("AllowFrontend", policy =>
                 {
-                    policy.WithOrigins("https://agreeable-moss-01b810900.6.azurestaticapps.net/") // 你的前端地址
+                    policy.WithOrigins("https://agreeable-moss-01b810900.6.azurestaticapps.net") // 你的前端地址
                           .AllowAnyHeader()
                           .AllowAnyMethod()
                           .AllowCredentials(); // 允许 Cookie（HTTP ONLY 必须带上）
