@@ -17,9 +17,22 @@ namespace UserCenter.API
     {
         public static async Task Main(string[] args)
         {
+
+
             
 
             var builder = WebApplication.CreateBuilder(args);
+
+            // debuger
+            Console.WriteLine("Environment: " + builder.Environment.EnvironmentName);
+
+            var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+            Console.WriteLine("ConnectionString: " + (connectionString ?? "NULL"));
+
+            var jwtSettings = builder.Configuration.GetSection("JwtSettings").Get<JwtSettings>();
+            Console.WriteLine("JWT Issuer: " + jwtSettings?.Issuer);
+            Console.WriteLine("JWT Secret: " + jwtSettings?.SecretKey);
+
 
             // Add services to the container.
 
