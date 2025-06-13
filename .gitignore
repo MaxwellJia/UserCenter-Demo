@@ -363,3 +363,6 @@ MigrationBackup/
 FodyWeavers.xsd
 /UserCenter.API/appsettings.Development.json
 /UserCenter.Infrastructure/Services/UserServiceTest.cs
+# ✅ 显式包含发布目录中的文件
+!UserCenter.API/publish/
+!UserCenter.API/publish/**
