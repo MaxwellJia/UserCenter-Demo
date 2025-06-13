@@ -33,6 +33,12 @@ namespace UserCenter.API
             Console.WriteLine("JWT Issuer: " + jwtSettings?.Issuer);
             Console.WriteLine("JWT Secret: " + jwtSettings?.SecretKey);
 
+            
+            //var secretKey = jwtSettings?.SecretKey;
+           // var issuer = jwtSettings?.Issuer;
+            //var audience = jwtSettings?.Audience;
+
+
 
             // Add services to the container.
 
