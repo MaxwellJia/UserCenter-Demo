@@ -41,7 +41,8 @@ namespace UserCenter.API
 
             // 注册 DbContext
             builder.Services.AddDbContext<UserCenterDbContext>(options =>
-                options.UseNpgsql(connectionString));
+    options.UseSqlServer(connectionString)); // ✅ SQL Server 驱动
+
 
             // 注册 JWT 认证
             builder.Services.Configure<JwtSettings>(
@@ -52,7 +53,7 @@ namespace UserCenter.API
             {
                 options.AddPolicy("AllowFrontend", policy =>
                 {
-                    policy.WithOrigins("http://localhost:3000") // 你的前端地址
+                    policy.WithOrigins("https://agreeable-moss-01b810900.6.azurestaticapps.net/") // 你的前端地址
                           .AllowAnyHeader()
                           .AllowAnyMethod()
                           .AllowCredentials(); // 允许 Cookie（HTTP ONLY 必须带上）
