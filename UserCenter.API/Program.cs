@@ -37,7 +37,7 @@ namespace UserCenter.API
             // Add services to the container.
 
             // 读取连接字符串
-            var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+            //var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
             // 注册 DbContext
             builder.Services.AddDbContext<UserCenterDbContext>(options =>
