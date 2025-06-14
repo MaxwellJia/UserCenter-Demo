@@ -6,49 +6,67 @@ using System.Security.Claims;
 using System.Text;
 using UserCenter.Core.Configuration;
 using UserCenter.Core.Interfaces;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Hosting;
+
 
 namespace UserCenter.Infrastructure.Services
 {
     public class CookieService : ICookieService
     {
         private readonly JwtSettings _jwtSettings;
+        private readonly IWebHostEnvironment _env;
 
-        public CookieService(IOptions<JwtSettings> jwtSettings)
+        public CookieService(IOptions<JwtSettings> jwtSettings, IWebHostEnvironment env)
         {
             _jwtSettings = jwtSettings.Value;
+            _env = env;
         }
 
         public void AppendAuthTokenCookie(HttpResponse response, string token)
         {
-            response.Cookies.Append("token", token, new CookieOptions
+            var options = new CookieOptions
             {
                 HttpOnly = true,
-                Secure = true, // 本地开发设为 false
-                SameSite = SameSiteMode.None,
+                Path = "/",
                 Expires = DateTimeOffset.UtcNow.AddHours(1)
-            });
+            };
+
+            if (_env.IsDevelopment())
+            {
+                options.SameSite = SameSiteMode.Lax;
+                options.Secure = false;
+            }
+            else
+            {
+                options.SameSite = SameSiteMode.None;
+                options.Secure = true;
+            }
+
+            response.Cookies.Append("token", token, options);
         }
-        // TODO: 线上环境可参考
-        //if (_env.IsDevelopment())
-        //{
-        //options.SameSite = SameSiteMode.Lax;
-        //options.Secure = false;
-        //}
-        //else
-        //{
-        //options.SameSite = SameSiteMode.None;
-        //options.Secure = true;
-        //}
 
         public void ExpireAuthTokenCookie(HttpResponse response)
         {
-            response.Cookies.Append("token", "", new CookieOptions
+            var options = new CookieOptions
             {
                 HttpOnly = true,
-                SameSite = SameSiteMode.Lax,
                 Path = "/",
                 Expires = DateTimeOffset.UtcNow.AddDays(-1)
-            });
+            };
+
+            if (_env.IsDevelopment())
+            {
+                options.SameSite = SameSiteMode.Lax;
+                options.Secure = false;
+            }
+            else
+            {
+                options.SameSite = SameSiteMode.None;
+                options.Secure = true;
+            }
+
+            response.Cookies.Append("token", "", options);
         }
 
         public ClaimsPrincipal? ValidateToken(HttpRequest request)
@@ -70,7 +88,7 @@ namespace UserCenter.Infrastructure.Services
                     ValidateLifetime = true,
                     ValidateIssuerSigningKey = true,
                     IssuerSigningKey = new SymmetricSecurityKey(key),
-                    ClockSkew = TimeSpan.Zero // 不允许时间偏差
+                    ClockSkew = TimeSpan.Zero
                 }, out SecurityToken validatedToken);
 
                 return principal;
@@ -82,4 +100,5 @@ namespace UserCenter.Infrastructure.Services
         }
     }
 }
+
 
