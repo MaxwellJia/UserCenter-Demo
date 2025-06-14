@@ -59,7 +59,7 @@ namespace UserCenter.API
             {
                 options.AddPolicy("AllowFrontend", policy =>
                 {
-                    policy.WithOrigins("https://agreeable-moss-01b810900.6.azurestaticapps.net") // 你的前端地址
+                    policy.WithOrigins("https://agreeable-moss-01b810900.6.azurestaticapps.net", "http://localhost:3000") // 你的前端地址
                           .AllowAnyHeader()
                           .AllowAnyMethod()
                           .AllowCredentials(); // 允许 Cookie（HTTP ONLY 必须带上）
@@ -161,7 +161,7 @@ namespace UserCenter.API
                         var services = scope.ServiceProvider;
                         var dbContext = services.GetRequiredService<UserCenterDbContext>();
                         var seeder = new DataSeeder(dbContext);
-                        Console.WriteLine("[Seeder] 开始生成用户数据");
+                        Console.WriteLine("[Seeder] 开始生成用户数据 如果数据库存在数据则不会自动生成");
                         await seeder.SeedUsersAsync(500); // 👈 可根据需要更改为较小数量
                     }
                     catch (Exception ex)
