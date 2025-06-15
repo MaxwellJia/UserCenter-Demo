@@ -27,4 +27,8 @@
     <ProjectReference Include="..\UserCenter.Infrastructure\UserCenter.Infrastructure.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\_next\clJnjwxHY-JKKFEXu6VqM\" />
+  </ItemGroup>
+
 </Project>
