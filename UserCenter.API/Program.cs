@@ -167,6 +167,7 @@ namespace UserCenter.API
                     catch (Exception ex)
                     {
                         Console.WriteLine("[Seeder] 数据种子失败: " + ex.Message);
+
                     }
                 }
             }
