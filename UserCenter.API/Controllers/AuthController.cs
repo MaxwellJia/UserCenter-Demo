@@ -43,7 +43,12 @@ namespace UserCenter.API.Controllers
 
 
 
-                return Ok(result); // 可返回用户信息给前端使用
+                return Ok(new
+                {
+                    user = result.Data,
+                    token = tokenString,
+                    message = "Login success"
+                }); // 可返回用户信息给前端使用
             }
 
             return BadRequest(result.Message ?? "Login failed");
