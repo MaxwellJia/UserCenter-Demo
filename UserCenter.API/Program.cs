@@ -170,7 +170,9 @@ namespace UserCenter.API
                     }
                 }
             }
-
+            //确保 .NET 后端项目支持静态文件访问 将前端也放在web app service上
+            app.UseDefaultFiles();
+            app.UseStaticFiles();
 
             // Allow all frontend access
             app.UseCors("AllowFrontend");
