@@ -28,7 +28,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="wwwroot\_next\LTS4HWeh6RSvIjPa5sOSP\" />
+    <Folder Include="wwwroot\" />
   </ItemGroup>
 
 </Project>
