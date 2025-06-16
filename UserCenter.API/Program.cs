@@ -59,7 +59,7 @@ namespace UserCenter.API
             {
                 options.AddPolicy("AllowFrontend", policy =>
                 {
-                    policy.WithOrigins("https://thankful-smoke-011c73b00.1.azurestaticapps.net/", "http://localhost:3000", "https://usercenter-demo-bsc9fyazcubtgka0.australiaeast-01.azurewebsites.net") // 你的前端地址
+                    policy.WithOrigins("https://thankful-smoke-011c73b00.1.azurestaticapps.net", "http://localhost:3000", "https://usercenter-demo-bsc9fyazcubtgka0.australiaeast-01.azurewebsites.net") // 你的前端地址
                           .AllowAnyHeader()
                           .AllowAnyMethod()
                           .AllowCredentials(); // 允许 Cookie（HTTP ONLY 必须带上）
