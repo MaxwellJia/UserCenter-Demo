@@ -140,8 +140,7 @@ namespace UserCenter.API
 
             var app = builder.Build();
 
-            app.UseDefaultFiles(); // 可选：自动寻找 index.html
-            app.UseStaticFiles();  // 必需：启用静态文件服务
+            
 
 
             // 开发环境启用 Swagger
@@ -172,14 +171,20 @@ namespace UserCenter.API
                 }
             }
 
+            // 启用路由
+            app.UseRouting();
+
             // Allow all frontend access
-            app.UseCors();
+            app.UseCors("AllowFrontend");
 
             // Configure the HTTP request pipeline...
             app.UseAuthentication();
             app.UseAuthorization();
 
             app.MapControllers();
+
+            app.UseDefaultFiles(); // 可选：自动寻找 index.html
+            app.UseStaticFiles();  // 必需：启用静态文件服务
 
             app.Run();
         }
