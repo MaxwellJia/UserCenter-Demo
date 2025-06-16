@@ -173,7 +173,7 @@ namespace UserCenter.API
             }
 
             // Allow all frontend access
-            app.UseCors("AllowFrontend");
+            app.UseCors();
 
             // Configure the HTTP request pipeline...
             app.UseAuthentication();
