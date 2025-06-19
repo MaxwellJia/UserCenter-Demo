@@ -10,7 +10,7 @@ namespace UserCenter.Core.DTOs.Auth
     public class RegisterUserDto
     {
         [Required]
-        [MinLength(6)]
+        [MinLength(3)]
         [MaxLength(32)]
         [RegularExpression("^[a-zA-Z0-9_]+$")]
         public string Username { get; set; }
