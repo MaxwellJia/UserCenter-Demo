@@ -2,6 +2,10 @@
 
 This is a user center backend API built with ASP.NET Core for the Cam Fall demo, which supports User Registration, Login, Viewing and Modifying Personal Information, User Management, JSON Web Token, and Role-Based Access Control. It adopts a layered architecture design and uses JWT for identity authentication.
 
+## Access the website already deployment
+
+[UserCenter](https://thankful-smoke-011c73b00.1.azurestaticapps.net)
+
 ## Technology stack
 
 - **Backend framework**: ASP.NET Core Web API (.NET 8)
@@ -51,7 +55,7 @@ You need to set the following environment variables to run the service correctly
 
 Change your own database driver (SQL driver for example)
 
-```json
+```
 builder.Services.AddDbContext<UserCenterDbContext>(options => options.UseSqlServer(connectionString));
 ```
 
@@ -87,7 +91,7 @@ dotnet ef database update
 
 When you first run the server and there is no data in your database, some data will be automatically generated. You can change it(change the number for example) in the Program.cs:
 
-```json
+```
 if (app.Environment.IsDevelopment())
 {
     using (var scope = app.Services.CreateScope())
