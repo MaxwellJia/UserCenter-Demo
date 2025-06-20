@@ -36,12 +36,12 @@ You need to set the following environment variables to run the service correctly
       "Microsoft.AspNetCore": "Warning"
     }
   },
-"AllowedHosts": "*", // Please set to your front end host
+"AllowedHosts": "*",
   "ConnectionStrings": {
     "DefaultConnection": ""
   },
   "JwtSettings": {
-    "Issuer": "Please replace with your Issuer", // 
+    "Issuer": "Please replace with your Issuer",
     "Audience": "Please replace with your Audience",
     "SecretKey": "Please replace with your SecretKey",
     "ExpirationMinutes": 30
@@ -49,9 +49,11 @@ You need to set the following environment variables to run the service correctly
 }
 ```
 
+Change your own database driver (SQL driver for example)
+
 ```json
 builder.Services.AddDbContext<UserCenterDbContext>(options =>
-options.UseSqlServer(connectionString)); // Change the database driver that you want, SQL for example
+options.UseSqlServer(connectionString));
 ```
 
 #### 🌐 Front-end API address and CROS ('Program.cs' example)
@@ -77,9 +79,35 @@ builder.Services.AddCors(options =>
 
 ### 3. Database migration & update
 
+Already created an entity ApplicationUser and a DB context; you can change it accordingly.
+
 ```bash
 dotnet ef migrations add InitialCreate
 dotnet ef database update
+```
+
+When you first run the server and there is no data in your database, some data will be automatically generated. You can change it(change the number for example) in the Program.cs:
+
+```json
+if (app.Environment.IsDevelopment())
+{
+    using (var scope = app.Services.CreateScope())
+    {
+        try
+        {
+            var services = scope.ServiceProvider;
+            var dbContext = services.GetRequiredService<UserCenterDbContext>();
+            var seeder = new DataSeeder(dbContext);
+            Console.WriteLine("[Seeder] ");
+            await seeder.SeedUsersAsync(500); 
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("[Seeder] Data seed failed: " + ex.Message);
+
+        }
+    }
+}
 ```
 
 ### 4. Start the project
