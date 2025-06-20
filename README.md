@@ -52,8 +52,7 @@ You need to set the following environment variables to run the service correctly
 Change your own database driver (SQL driver for example)
 
 ```json
-builder.Services.AddDbContext<UserCenterDbContext>(options =>
-options.UseSqlServer(connectionString));
+builder.Services.AddDbContext<UserCenterDbContext>(options => options.UseSqlServer(connectionString));
 ```
 
 #### 🌐 Front-end API address and CROS ('Program.cs' example)
