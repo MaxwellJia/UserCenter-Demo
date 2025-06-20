@@ -26,7 +26,7 @@ cd UserCenter.API
 
 You need to set the following environment variables to run the service correctly:
 
-#### ✅ Required environment variables (local `appsettings.Development.json` and 'Program.cs' example)
+#### ✅ Required environment variables (local `appsettings.Development.json` and `Program.cs` example)
 
 ```json
 {
