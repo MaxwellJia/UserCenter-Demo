@@ -4,7 +4,7 @@ This is a user center backend API built with ASP.NET Core for the Cam Fall demo,
 
 ## Access the website already deployment
 
-[UserCenter](https://thankful-smoke-011c73b00.1.azurestaticapps.net)
+A website has been deployed to Azure, which applies this backend. Please feel free to access: [UserCenter](https://thankful-smoke-011c73b00.1.azurestaticapps.net)
 
 ## Technology stack
 
