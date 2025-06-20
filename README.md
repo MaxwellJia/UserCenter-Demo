@@ -160,7 +160,7 @@ withCredentials: true
 
 - [PostgreSQL](https://www.postgresql.org/)
 
-- Optional tool: [pgAdmin](https://www.pgadmin.org/)
+- Optional tool: [Navicat]([https://www.pgadmin.org/](https://www.navicat.com/en/))
 
 ## Azure deployment recommendations
 
