@@ -59,7 +59,7 @@ namespace UserCenter.API
             {
                 options.AddPolicy("AllowFrontend", policy =>
                 {
-                    policy.WithOrigins("https://thankful-smoke-011c73b00.1.azurestaticapps.net", "http://localhost:3000", "https://usercenter-demo-bsc9fyazcubtgka0.australiaeast-01.azurewebsites.net") // 你的前端地址
+                    policy.WithOrigins("https://thankful-smoke-011c73b00.1.azurestaticapps.net", "http://localhost:3000", "https://camfall.com.au") // 你的前端地址
                           .AllowAnyHeader()
                           .AllowAnyMethod()
                           .AllowCredentials(); // 允许 Cookie（HTTP ONLY 必须带上）
@@ -160,12 +160,12 @@ namespace UserCenter.API
                         var services = scope.ServiceProvider;
                         var dbContext = services.GetRequiredService<UserCenterDbContext>();
                         var seeder = new DataSeeder(dbContext);
-                        Console.WriteLine("[Seeder] 开始生成用户数据 如果数据库存在数据则不会自动生成");
+                        Console.WriteLine("[Seeder] Start generating user data. If the database already has data, it will not be generated automatically.");
                         await seeder.SeedUsersAsync(500); // 👈 可根据需要更改为较小数量
                     }
                     catch (Exception ex)
                     {
-                        Console.WriteLine("[Seeder] 数据种子失败: " + ex.Message);
+                        Console.WriteLine("[Seeder] Data seed failed: " + ex.Message);
 
                     }
                 }
