@@ -68,21 +68,6 @@ namespace UserCenter.API.Controllers
             return Ok(new { message = "Logout success" });
         }
 
-        [HttpGet]
-        public async Task<IActionResult> Ping()
-        {
-            try
-            {
-                // 最轻的查询，不加载数据，只唤醒连接
-                await _context.Database.ExecuteSqlRawAsync("SELECT 1");
-                return Ok("Database is active");
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(503, "Database not available: " + ex.Message);
-            }
-        }
-
 
     }
 }
