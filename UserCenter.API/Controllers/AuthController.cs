@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using UserCenter.Core.DTOs.Auth;
 using UserCenter.Core.Interfaces;
+using UserCenter.Infrastructure.Data;
 using UserCenter.Infrastructure.Services;
 
 namespace UserCenter.API.Controllers
@@ -16,11 +18,14 @@ namespace UserCenter.API.Controllers
         // 这里可以使用 CookieService 来处理 Cookie
         private readonly ICookieService _cookieService;
 
-        public AuthController(IAuthService authService, IUserService userService, ICookieService cookieService)
+        private readonly UserCenterDbContext _context;
+
+        public AuthController(IAuthService authService, IUserService userService, ICookieService cookieService, UserCenterDbContext context)
         {
             _authService = authService;
             _userService = userService;
             _cookieService = cookieService;
+            _context = context;
         }
 
 
@@ -62,5 +67,22 @@ namespace UserCenter.API.Controllers
 
             return Ok(new { message = "Logout success" });
         }
+
+        [HttpGet]
+        public async Task<IActionResult> Ping()
+        {
+            try
+            {
+                // 最轻的查询，不加载数据，只唤醒连接
+                await _context.Database.ExecuteSqlRawAsync("SELECT 1");
+                return Ok("Database is active");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(503, "Database not available: " + ex.Message);
+            }
+        }
+
+
     }
 }
