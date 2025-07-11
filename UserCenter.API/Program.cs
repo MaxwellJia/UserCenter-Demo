@@ -9,6 +9,9 @@ using UserCenter.Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Microsoft.Extensions.DependencyInjection;            // AddDbContextCheck 扩展方法所在
 
 
 namespace UserCenter.API
@@ -138,9 +141,38 @@ namespace UserCenter.API
             // 其他 Service 注册...
             builder.Services.AddScoped<IAuthService, AuthService>();
 
+
+            // —— 注册 Health Checks —— 
+            builder.Services.AddHealthChecks()
+                .AddDbContextCheck<UserCenterDbContext>(
+                    name: "Database",
+                    failureStatus: HealthStatus.Unhealthy,
+                    tags: new[] { "ready" }
+                );
+
             var app = builder.Build();
 
-            
+
+            // —— 映射健康检查端点 —— 
+            app.MapHealthChecks("/api/health", new HealthCheckOptions
+            {
+                Predicate = check => check.Tags.Contains("ready"),
+                ResponseWriter = async (context, report) =>
+                {
+                    context.Response.ContentType = "application/json";
+                    var result = new
+                    {
+                        status = report.Status.ToString(),
+                        checks = report.Entries.Select(e => new {
+                            name = e.Key,
+                            status = e.Value.Status.ToString(),
+                            error = e.Value.Exception?.Message
+                        })
+                    };
+                    await context.Response.WriteAsJsonAsync(result);
+                }
+            });
+
 
 
             // 开发环境启用 Swagger
