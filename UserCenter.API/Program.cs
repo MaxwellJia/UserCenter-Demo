@@ -36,9 +36,9 @@ namespace UserCenter.API
             Console.WriteLine("JWT Issuer: " + jwtSettings?.Issuer);
             Console.WriteLine("JWT Secret: " + jwtSettings?.SecretKey);
 
-            
+
             //var secretKey = jwtSettings?.SecretKey;
-           // var issuer = jwtSettings?.Issuer;
+            // var issuer = jwtSettings?.Issuer;
             //var audience = jwtSettings?.Audience;
 
 
@@ -50,8 +50,7 @@ namespace UserCenter.API
 
             // 注册 DbContext
             builder.Services.AddDbContext<UserCenterDbContext>(options =>
-    options.UseSqlServer(connectionString)); // ✅ SQL Server 驱动
-
+    options.UseNpgsql(connectionString)); // ✅ PostgreSQL 驱动
 
             // 注册 JWT 认证
             builder.Services.Configure<JwtSettings>(
